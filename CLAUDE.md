@@ -62,6 +62,12 @@ Profillar: `dev` (standart, H2) va `prod` (PostgreSQL, sozlamalar muhit o'zgaruv
 - Narx va summa faqat serverda hisoblanadi; mijozdan kelgan narx e'tiborga olinmaydi.
 - Kalitlar, parollar, token'lar faqat muhit o'zgaruvchilarida — kodda va repoda yo'q (`.env`, `application-local.yml` gitignore'da).
 - CORS faqat o'z domenimiz uchun ochiq.
+- Rollar (TZ 7): ADMIN, OPERATOR, WAREHOUSE, OWNER — yo'llar `config/SecurityConfig`, jadval testi `RoleMatrixTest`.
+  Yangi admin endpoint qo'shilsa, ikkalasiga ham qo'shiladi.
+
+## Sozlamalar
+- Barcha sozlamalar `epay.*` prefiksi bilan; promptlarda `app.*` deb yozilgan bo'lsa, `epay.*` ga o'gir.
+- Maxfiy qiymatlar `application.yml` da faqat `${MUHIT_OZGARUVCHISI:}` ko'rinishida; prod'da `StartupValidator` tekshiradi.
 
 ## Eski loyihadan ko'chirish
 Namuna: `D:\test\E-payy` (Spring Boot 3.3.5, Java 17, paket `uz.pcstore`) — faqat o'qish uchun, o'zgartirilmaydi.

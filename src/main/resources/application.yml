@@ -23,6 +23,16 @@ spring:
 server:
   port: 8080
   shutdown: graceful
+  servlet:
+    session:
+      # xodim sessiyasi (server tomonda); ID faqat cookie'da, URL'da emas
+      timeout: 8h
+      tracking-modes: cookie
+      cookie:
+        http-only: true
+        same-site: lax
+        # prod'da true (application-prod.yml)
+        secure: false
 
 management:
   endpoints:
@@ -44,6 +54,30 @@ epay:
     track:
       max: 10
       window: 1m
+    # login: IP bo'yicha xato urinishlar; login-user: bitta login nomiga barcha IP lardan (yumshoqroq)
     login:
       max: 10
       window: 15m
+    login-user:
+      max: 30
+      window: 15m
+  # saytning ochiq manzili, masalan https://epay.uz (prod'da majburiy, StartupValidator)
+  public-url: ${PUBLIC_URL:}
+  cors:
+    # yagona ruxsat etilgan domen; bo'sh — CORS yo'q (faqat o'z domen). Hech qachon "*"
+    allowed-origin: ${CORS_ALLOWED_ORIGIN:}
+  security:
+    # omborchi katalogda narxni o'zgartira oladimi (TZ 7: standart — yo'q)
+    warehouse-can-edit-price: ${WAREHOUSE_CAN_EDIT_PRICE:false}
+  admin:
+    # birinchi admin (xodimlar jadvali bo'sh bo'lsa); prod'da parol 12+ belgi
+    username: ${ADMIN_USERNAME:admin}
+    password: ${ADMIN_PASSWORD:}
+  payme:
+    merchant-id: ${PAYME_MERCHANT_ID:}
+    key: ${PAYME_KEY:}
+    checkout-url: ${PAYME_CHECKOUT_URL:https://checkout.paycom.uz}
+  click:
+    service-id: ${CLICK_SERVICE_ID:}
+    secret-key: ${CLICK_SECRET_KEY:}
+    api-url: ${CLICK_API_URL:https://api.click.uz/v2/merchant}

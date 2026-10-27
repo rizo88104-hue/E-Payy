@@ -10,26 +10,18 @@ import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * IP bo'yicha oddiy cheklovlar: qat'iy oyna (birinchi urinishdan boshlab window davomida max ta).
- * Hisoblagichlar xotirada — bitta ilova nusxasi uchun yetarli. Bir nechta nusxa ishga tushirilsa,
- * har biri alohida sanaydi va limit amalda ko'payadi: unda Bucket4j + PostgreSQL ga o'tiladi.
- * IP — request.getRemoteAddr(); prod'da server.forward-headers-strategy uni proksidan to'g'ri oladi.
- */
+
 @Component
 @EnableConfigurationProperties(RateLimitProperties.class)
 public class RateLimiter {
     static final String MESSAGE = "Juda ko'p urinish. Birozdan keyin qayta urinib ko'ring.";
-    /** Shundan ko'p kalit yig'ilsa, eskirganlari tozalanadi (xotira to'lmasin). */
     private static final int CLEANUP_THRESHOLD = 10_000;
 
     public enum Limit {
-        /** buyurtma berish */
         ORDER,
-        /** "Buyurtmam" qidiruvi */
         TRACK,
-        /** muvaffaqiyatsiz login */
-        LOGIN
+        LOGIN,
+        LOGIN_USER
     }
 
     private record Window(long start, int count) {
@@ -44,13 +36,12 @@ public class RateLimiter {
         this(props, Clock.systemUTC());
     }
 
-    /** Testlar vaqtni boshqarishi uchun. */
     RateLimiter(RateLimitProperties props, Clock clock) {
-        this.rules = Map.of(Limit.ORDER, props.order(), Limit.TRACK, props.track(), Limit.LOGIN, props.login());
+        this.rules = Map.of(Limit.ORDER, props.order(), Limit.TRACK, props.track(), Limit.LOGIN, props.login(),
+                Limit.LOGIN_USER, props.loginUser());
         this.clock = clock;
     }
 
-    /** Urinishni sanaydi; limitdan oshsa TooManyRequestsException (oyna tugashigacha qolgan vaqt bilan). */
     public void check(Limit limit, String ip) {
         RateLimitProperties.Rule rule = rules.get(limit);
         Window w = record(limit, ip);
@@ -60,16 +51,28 @@ public class RateLimiter {
         }
     }
 
-    /** Urinishni sanaydi va oynadagi jami sonni qaytaradi. */
     public int hit(Limit limit, String ip) {
         return record(limit, ip).count();
     }
 
-    /** Sanamasdan tekshiradi: limit allaqachon to'lganmi (login bloki uchun). */
     public boolean blocked(Limit limit, String ip) {
         RateLimitProperties.Rule rule = rules.get(limit);
         Window w = hits.get(key(limit, ip));
         return w != null && clock.millis() - w.start() < rule.window().toMillis() && w.count() >= rule.max();
+    }
+
+    /** Blok tugashigacha qolgan vaqt; bloklanmagan bo'lsa — ZERO. */
+    public Duration blockedFor(Limit limit, String key) {
+        if (!blocked(limit, key)) {
+            return Duration.ZERO;
+        }
+        Window w = hits.get(key(limit, key));
+        return Duration.ofMillis(Math.max(0, rules.get(limit).window().toMillis() - (clock.millis() - w.start())));
+    }
+
+    /** Hisoblagichni nolga tushiradi (masalan, login nomi bo'yicha muvaffaqiyatli kirishdan keyin). */
+    public void reset(Limit limit, String key) {
+        hits.remove(key(limit, key));
     }
 
     private Window record(Limit limit, String ip) {

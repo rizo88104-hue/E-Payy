@@ -46,7 +46,7 @@ class MigrationPostgresIT {
     @Test
     void migrationsApplyOnEmptyDatabase() {
         assertThat(flyway.info().pending()).isEmpty();
-        assertThat(flyway.info().applied()).extracting(m -> m.getVersion().getVersion()).containsExactly("1", "2");
+        assertThat(flyway.info().applied()).extracting(m -> m.getVersion().getVersion()).containsExactly("1", "2", "3");
         assertThat(jdbc.queryForObject("select version()", String.class)).contains("PostgreSQL 17");
         // demo ma'lumotlar (db/dev-data) bu yerga tushmagan
         assertThat(jdbc.queryForObject("select count(*) from products", Integer.class)).isZero();

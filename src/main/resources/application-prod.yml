@@ -3,3 +3,11 @@ spring:
     url: ${SPRING_DATASOURCE_URL}
     username: ${SPRING_DATASOURCE_USERNAME}
     password: ${SPRING_DATASOURCE_PASSWORD}
+
+server:
+  # proksi (Nginx) ortida: haqiqiy IP va https — X-Forwarded-* dan (rate limit, Secure cookie, HSTS)
+  forward-headers-strategy: native
+  servlet:
+    session:
+      cookie:
+        secure: true

@@ -7,3 +7,7 @@ spring:
 
 epay:
   upload-dir: target/test-uploads
+  cors:
+    allowed-origin: https://shop.epay.test
+  admin:
+    password: test-admin-password

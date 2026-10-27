@@ -24,7 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /** Admin API. Rollar 1.3 da — hozircha istalgan kirgan foydalanuvchi (@WithMockUser). */
-@WithMockUser
+@WithMockUser(roles = "ADMIN")
 class AdminProductApiTest extends ApiTestBase {
     private Category cpus;
     private Brand amd;

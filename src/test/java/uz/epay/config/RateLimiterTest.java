@@ -25,7 +25,7 @@ class RateLimiterTest {
     void setUp() {
         clock = new MutableClock();
         // null -> standart limitlar: ORDER 5/10m, TRACK 10/1m, LOGIN 10/15m
-        limiter = new RateLimiter(new RateLimitProperties(null, null, null), clock);
+        limiter = new RateLimiter(new RateLimitProperties(null, null, null, null), clock);
     }
 
     @Test
@@ -94,12 +94,38 @@ class RateLimiterTest {
 
     @Test
     void customLimitsFromProperties() {
-        var props = new RateLimitProperties(new RateLimitProperties.Rule(1, Duration.ofSeconds(30)), null, null);
+        var props = new RateLimitProperties(new RateLimitProperties.Rule(1, Duration.ofSeconds(30)), null, null, null);
         var custom = new RateLimiter(props, clock);
         custom.check(Limit.ORDER, IP);
         assertThatThrownBy(() -> custom.check(Limit.ORDER, IP)).isInstanceOf(TooManyRequestsException.class);
         clock.advance(Duration.ofSeconds(30));
         assertThatCode(() -> custom.check(Limit.ORDER, IP)).doesNotThrowAnyException();
+    }
+
+    @Test
+    void blockedForReturnsTimeLeftOrZero() {
+        assertThat(limiter.blockedFor(Limit.LOGIN, IP)).isZero();
+        for (int i = 0; i < 10; i++) {
+            limiter.hit(Limit.LOGIN, IP);
+        }
+        clock.advance(Duration.ofMinutes(5));
+        assertThat(limiter.blockedFor(Limit.LOGIN, IP)).isEqualTo(Duration.ofMinutes(10));
+        clock.advance(Duration.ofMinutes(10));
+        assertThat(limiter.blockedFor(Limit.LOGIN, IP)).isZero();
+    }
+
+    @Test
+    void loginUserLimitIsSofterAndResettable() {
+        for (int i = 0; i < 29; i++) {
+            limiter.hit(Limit.LOGIN_USER, "ali");
+        }
+        assertThat(limiter.blocked(Limit.LOGIN_USER, "ali")).isFalse();
+        limiter.hit(Limit.LOGIN_USER, "ali");
+        assertThat(limiter.blocked(Limit.LOGIN_USER, "ali")).isTrue();
+
+        limiter.reset(Limit.LOGIN_USER, "ali");
+        assertThat(limiter.blocked(Limit.LOGIN_USER, "ali")).isFalse();
+        assertThat(limiter.hit(Limit.LOGIN_USER, "ali")).isEqualTo(1);
     }
 
     /** Qo'lda suriladigan soat. */

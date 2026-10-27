@@ -6,6 +6,7 @@ import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import uz.epay.config.EpayProperties;
 import uz.epay.dto.DeleteResult;
 import uz.epay.dto.PageResponse;
 import uz.epay.dto.ProductCard;
@@ -16,8 +17,10 @@ import uz.epay.entity.Category;
 import uz.epay.entity.Product;
 import uz.epay.entity.ProductImage;
 import uz.epay.entity.ProductStatus;
+import uz.epay.entity.StaffRole;
 import uz.epay.exception.BadRequestException;
 import uz.epay.exception.ConflictException;
+import uz.epay.exception.ForbiddenException;
 import uz.epay.exception.NotFoundException;
 import uz.epay.repository.BrandRepository;
 import uz.epay.repository.CategoryRepository;
@@ -42,14 +45,16 @@ public class ProductService {
     private final BrandRepository brands;
     private final ProductUsageChecker usage;
     private final ImageStorage storage;
+    private final boolean warehouseCanEditPrice;
 
     public ProductService(ProductRepository products, CategoryRepository categories, BrandRepository brands,
-                          ProductUsageChecker usage, ImageStorage storage) {
+                          ProductUsageChecker usage, ImageStorage storage, EpayProperties props) {
         this.products = products;
         this.categories = categories;
         this.brands = brands;
         this.usage = usage;
         this.storage = storage;
+        this.warehouseCanEditPrice = props.security().warehouseCanEditPrice();
     }
 
     // --- ochiq katalog ---
@@ -105,6 +110,7 @@ public class ProductService {
         if (products.existsBySkuAndIdNot(req.sku(), id)) {
             throw new ConflictException("Bu SKU bilan mahsulot allaqachon bor: " + req.sku());
         }
+        checkWarehouseLimits(p, req);
         // flush — yangi version javobga tushishi uchun (keyingi tahrir shu bilan yuboriladi)
         return ProductDetails.from(products.saveAndFlush(apply(p, req)));
     }
@@ -165,6 +171,22 @@ public class ProductService {
     }
 
     // --- yordamchilar ---
+
+    /**
+     * Omborchi (TZ 7): mavjud mahsulotni tahrirlaydi va nashr qiladi (faqat DRAFT/PUBLISHED, arxivlash — admin),
+     * narxni esa faqat epay.security.warehouse-can-edit-price=true bo'lsa o'zgartiradi.
+     */
+    private void checkWarehouseLimits(Product p, ProductRequest req) {
+        if (!CurrentUser.hasRole(StaffRole.WAREHOUSE) || CurrentUser.hasRole(StaffRole.ADMIN)) {
+            return;
+        }
+        if (!warehouseCanEditPrice && p.getPrice().compareTo(req.price()) != 0) {
+            throw new ForbiddenException("Narxni o'zgartirish huquqingiz yo'q");
+        }
+        if (req.status() == ProductStatus.ARCHIVED && p.getStatus() != ProductStatus.ARCHIVED) {
+            throw new ForbiddenException("Mahsulotni arxivlash huquqingiz yo'q");
+        }
+    }
 
     private Product load(Long id) {
         return products.findWithDetailsById(id).orElseThrow(() -> notFound(id));
