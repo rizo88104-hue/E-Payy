@@ -24,6 +24,7 @@ import org.springframework.web.method.annotation.HandlerMethodValidationExceptio
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
+import uz.epay.service.ImageStorage;
 
 import java.util.List;
 import java.util.Map;
@@ -176,7 +177,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @Override
     protected ResponseEntity<Object> handleMaxUploadSizeExceededException(
             MaxUploadSizeExceededException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
-        return withDetail(ex, headers, status, request, "Fayl hajmi juda katta");
+        // 413 emas, 400: ImageStorage dagi o'lcham tekshiruvi bilan bir xil javob (multipart chegarasi ham 5 MB)
+        return withDetail(ex, headers, HttpStatus.BAD_REQUEST, request, ImageStorage.TOO_LARGE);
     }
 
     // --- yordamchilar ---

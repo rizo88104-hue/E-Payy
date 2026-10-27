@@ -28,6 +28,7 @@
     </scm>
     <properties>
         <java.version>21</java.version>
+        <twelvemonkeys.version>3.15.3</twelvemonkeys.version>
     </properties>
     <dependencies>
         <!-- Web: REST API va statik sayt -->
@@ -91,10 +92,50 @@
             <optional>true</optional>
         </dependency>
 
+        <!-- Mahsulot rasmlari (service/ImageStorage) -->
+        <!-- WebP ga YOZISH: native libwebp (Windows/Linux/Mac, x64 va arm ichida). TwelveMonkeys WebP yoza olmaydi -->
+        <dependency>
+            <groupId>com.github.usefulness</groupId>
+            <artifactId>webp-imageio</artifactId>
+            <version>0.11.0</version>
+        </dependency>
+        <!-- yuklangan WebP ni O'QISH: sof Java — begona fayl native kodga berilmaydi -->
+        <dependency>
+            <groupId>com.twelvemonkeys.imageio</groupId>
+            <artifactId>imageio-webp</artifactId>
+            <version>${twelvemonkeys.version}</version>
+        </dependency>
+        <!-- JPEG o'qish: JDK o'quvchisi CMYK/YCCK JPEG larda yiqiladi, bu esa ularni ham o'qiydi -->
+        <dependency>
+            <groupId>com.twelvemonkeys.imageio</groupId>
+            <artifactId>imageio-jpeg</artifactId>
+            <version>${twelvemonkeys.version}</version>
+        </dependency>
+
         <!-- Testlar -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- Testcontainers'ni Spring Boot bilan ulaydi (@ServiceConnection); versiyasi Spring Boot bilan bir xil -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-testcontainers</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- integratsion testlar uchun haqiqiy PostgreSQL konteyneri (Docker kerak) -->
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers-postgresql</artifactId>
+            <version>2.0.5</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- @Testcontainers / @Container JUnit 5 annotatsiyalari (disabledWithoutDocker) -->
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers-junit-jupiter</artifactId>
+            <version>2.0.5</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -102,9 +143,10 @@
             <artifactId>spring-boot-starter-webmvc-test</artifactId>
             <scope>test</scope>
         </dependency>
+        <!-- spring-security-test + Boot 4 dagi MockMvc ulanishi (@WithMockUser MockMvc so'rovlariga tushishi uchun) -->
         <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-test</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security-test</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -133,6 +175,12 @@
                         </exclude>
                     </excludes>
                 </configuration>
+            </plugin>
+            <!-- *IT.java integratsion testlar: `verify` bosqichida ishlaydi (`test` da emas — ular sekinroq) -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>3.5.6</version>
             </plugin>
         </plugins>
     </build>

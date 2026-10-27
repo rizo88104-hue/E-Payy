@@ -5,3 +5,6 @@ spring:
     password:
   jpa:
     show-sql: true
+  flyway:
+    # db/dev-data — faqat dev uchun demo katalog (prod'da bu joylashuv yo'q)
+    locations: classpath:db/migration,classpath:db/dev-data
