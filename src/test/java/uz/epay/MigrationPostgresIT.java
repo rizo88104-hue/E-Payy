@@ -14,6 +14,7 @@ import uz.epay.entity.Category;
 import uz.epay.entity.Product;
 import uz.epay.entity.ProductStatus;
 import uz.epay.repository.CategoryRepository;
+import uz.epay.repository.OrderRepository;
 import uz.epay.repository.ProductRepository;
 
 import java.math.BigDecimal;
@@ -42,11 +43,13 @@ class MigrationPostgresIT {
     CategoryRepository categories;
     @Autowired
     ProductRepository products;
+    @Autowired
+    OrderRepository orders;
 
     @Test
     void migrationsApplyOnEmptyDatabase() {
         assertThat(flyway.info().pending()).isEmpty();
-        assertThat(flyway.info().applied()).extracting(m -> m.getVersion().getVersion()).containsExactly("1", "2", "3");
+        assertThat(flyway.info().applied()).extracting(m -> m.getVersion().getVersion()).containsExactly("1", "2", "3", "4");
         assertThat(jdbc.queryForObject("select version()", String.class)).contains("PostgreSQL 17");
         // demo ma'lumotlar (db/dev-data) bu yerga tushmagan
         assertThat(jdbc.queryForObject("select count(*) from products", Integer.class)).isZero();
@@ -60,6 +63,13 @@ class MigrationPostgresIT {
         assertThat(jdbc.queryForObject("select numeric_precision || ',' || numeric_scale from information_schema.columns "
                 + "where table_name = 'products' and column_name = 'price'", String.class))
                 .isEqualTo("14,2");
+    }
+
+    /** Buyurtma raqami ketma-ketligi PostgreSQL da ishlaydi va o'sib boradi. */
+    @Test
+    void orderNumberSequence() {
+        long first = orders.nextNumber();
+        assertThat(orders.nextNumber()).isEqualTo(first + 1);
     }
 
     @Test

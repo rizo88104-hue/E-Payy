@@ -11,3 +11,5 @@ epay:
     allowed-origin: https://shop.epay.test
   admin:
     password: test-admin-password
+  payment:
+    usd-rate: 12650.00

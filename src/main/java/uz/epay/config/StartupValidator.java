@@ -35,6 +35,10 @@ public class StartupValidator {
         requireHttps(errors, "PUBLIC_URL (epay.public-url)", props.publicUrl());
         requireHttps(errors, "CORS_ALLOWED_ORIGIN (epay.cors.allowed-origin)", props.cors().allowedOrigin());
 
+        if (props.payment().usdRate() == null || props.payment().usdRate().signum() <= 0) {
+            errors.add("PAYMENT_USD_RATE (epay.payment.usd-rate) berilmagan yoki musbat emas");
+        }
+
         if (isSet(props.payme().key()) && isSandbox(props.payme().checkoutUrl())) {
             errors.add("Payme kaliti berilgan, lekin manzil sandbox: " + props.payme().checkoutUrl());
         }

@@ -5,6 +5,7 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
 import uz.epay.EPayApplication;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,8 +18,8 @@ class StartupValidatorTest {
     private static EpayProperties props(String adminPassword, String publicUrl, String cors,
                                         String paymeKey, String paymeUrl) {
         return new EpayProperties(publicUrl, new EpayProperties.Cors(cors), null,
-                new EpayProperties.Admin("admin", adminPassword),
-                new EpayProperties.Payme(null, paymeKey, paymeUrl), null);
+                new EpayProperties.Admin("admin", adminPassword), new EpayProperties.Payment(new BigDecimal("12650")),
+                new EpayProperties.Payme(null, paymeKey, paymeUrl), null, null);
     }
 
     @Test
@@ -52,6 +53,14 @@ class StartupValidatorTest {
                 null, "https://test.paycom.uz"))).isEmpty();
     }
 
+    @Test
+    void usdRateIsRequired() {
+        EpayProperties noRate = new EpayProperties("https://epay.uz", new EpayProperties.Cors("https://epay.uz"), null,
+                new EpayProperties.Admin("admin", STRONG), null, null, null, null);
+        assertThat(StartupValidator.validate(noRate))
+                .containsExactly("PAYMENT_USD_RATE (epay.payment.usd-rate) berilmagan yoki musbat emas");
+    }
+
     /** Haqiqiy prod konteksti: zaif parol bilan ilova ishga tushmaydi. */
     @Test
     void prodContextFailsWithWeakPassword() {
@@ -80,6 +89,7 @@ class StartupValidatorTest {
         p.put("epay.public-url", "https://epay.uz");
         p.put("epay.cors.allowed-origin", "https://epay.uz");
         p.put("epay.upload-dir", "target/prodcheck-uploads");
+        p.put("epay.payment.usd-rate", "12650");
         return p;
     }
 

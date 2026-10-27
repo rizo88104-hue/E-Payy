@@ -8,3 +8,8 @@ spring:
   flyway:
     # db/dev-data — faqat dev uchun demo katalog (prod'da bu joylashuv yo'q)
     locations: classpath:db/migration,classpath:db/dev-data
+
+epay:
+  payment:
+    # dev uchun taxminiy kurs (prod'da PAYMENT_USD_RATE majburiy)
+    usd-rate: 12700

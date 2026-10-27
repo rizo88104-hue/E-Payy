@@ -73,6 +73,19 @@ epay:
     # birinchi admin (xodimlar jadvali bo'sh bo'lsa); prod'da parol 12+ belgi
     username: ${ADMIN_USERNAME:admin}
     password: ${ADMIN_PASSWORD:}
+  payment:
+    # 1 $ necha so'm; buyurtmada qotiriladi (prod'da majburiy, StartupValidator)
+    usd-rate: ${PAYMENT_USD_RATE:}
+  order:
+    # to'lanmagan buyurtma shu vaqtdan keyin eskiradi (expires_at, OrderExpiryJob)
+    unpaid-timeout: ${ORDER_UNPAID_TIMEOUT:24h}
+    # bitta telefondan to'lanmagan NEW buyurtmalar chegarasi
+    max-pending-per-phone: 3
+    # kafolat muddati (yil) -> narxga qo'shiladigan foiz; eng qisqasi narx ichida
+    warranty:
+      1: 0
+      3: 10
+      5: 20
   payme:
     merchant-id: ${PAYME_MERCHANT_ID:}
     key: ${PAYME_KEY:}

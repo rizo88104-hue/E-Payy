@@ -19,6 +19,7 @@ import uz.epay.entity.StaffRole;
 import uz.epay.exception.BadRequestException;
 import uz.epay.exception.ConflictException;
 import uz.epay.exception.NotFoundException;
+import uz.epay.repository.OrderRepository;
 import uz.epay.repository.StaffRepository;
 
 import java.time.Instant;
@@ -35,11 +36,14 @@ public class StaffService implements UserDetailsService {
     private final StaffRepository staff;
     private final PasswordEncoder passwordEncoder;
     private final SessionRegistry sessions;
+    private final OrderRepository orders;
 
-    public StaffService(StaffRepository staff, PasswordEncoder passwordEncoder, SessionRegistry sessions) {
+    public StaffService(StaffRepository staff, PasswordEncoder passwordEncoder, SessionRegistry sessions,
+                        OrderRepository orders) {
         this.staff = staff;
         this.passwordEncoder = passwordEncoder;
         this.sessions = sessions;
+        this.orders = orders;
     }
 
     public static String normalize(String username) {
@@ -136,7 +140,10 @@ public class StaffService implements UserDetailsService {
         Staff s = get(id);
         requireNotSelf(s, "O'zingizni o'chira olmaysiz");
         requireNotLastAdmin(s);
-        // TODO(1.4): buyurtmalar bilan ishlagan xodim o'chirilmaydi — faqat bloklanadi
+        if (orders.existsByAssignedOperatorId(s.getId())) {
+            // buyurtmalar tarixi saqlanib qolsin
+            throw new ConflictException(s.getFullName() + " buyurtmalar bilan ishlagan — o'chirish o'rniga bloklang");
+        }
         staff.delete(s);
         expireSessions(s.getUsername(), null);
     }

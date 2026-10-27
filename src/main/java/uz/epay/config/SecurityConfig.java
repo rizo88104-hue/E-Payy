@@ -60,7 +60,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // --- ochiq ---
                         .requestMatchers(HttpMethod.GET, "/api/categories", "/api/brands", "/api/products",
-                                "/api/products/*").permitAll()
+                                "/api/products/*", "/api/regions").permitAll()
                         // xaridor: buyurtma berish va number + telefon bilan kuzatish (1.4)
                         .requestMatchers(HttpMethod.POST, "/api/orders", "/api/orders/track").permitAll()
                         .requestMatchers(HttpMethod.POST, PAYMENT_CALLBACKS).permitAll()

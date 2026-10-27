@@ -43,6 +43,8 @@ class RoleMatrixTest extends ApiTestBase {
             // --- ochiq (xaridor login qilmaydi) ---
             new Case(HttpMethod.GET, "/api/products", EVERYONE),
             new Case(HttpMethod.GET, "/api/categories", EVERYONE),
+            new Case(HttpMethod.GET, "/api/regions", EVERYONE),
+            new Case(HttpMethod.POST, "/api/orders", EVERYONE),
             new Case(HttpMethod.POST, "/api/orders/track", EVERYONE),
 
             // --- katalog: ADMIN tahrir, OPERATOR/OWNER ko'radi, WAREHOUSE mavjudini tahrirlaydi ---
@@ -69,7 +71,10 @@ class RoleMatrixTest extends ApiTestBase {
             new Case(HttpMethod.GET, "/api/admin/orders/1", ADMIN, OPERATOR, OWNER),
             new Case(HttpMethod.POST, "/api/admin/orders/1/take", ADMIN, OPERATOR),
             new Case(HttpMethod.PATCH, "/api/admin/orders/1/status", ADMIN, OPERATOR),
-            new Case(HttpMethod.POST, "/api/admin/orders/1/cancel", ADMIN, OPERATOR),
+            new Case(HttpMethod.PATCH, "/api/admin/orders/1/note", ADMIN, OPERATOR),
+            // xavfsizlik qatlamidan operator o'tadi; "boshqaga biriktirish — faqat admin" OrderService da
+            // (AdminOrderApiTest.onlyAdminAssignsToOthers)
+            new Case(HttpMethod.PUT, "/api/admin/orders/1/operator", ADMIN, OPERATOR),
             // pul qaytarildi (REFUNDED) — faqat admin
             new Case(HttpMethod.PATCH, "/api/admin/orders/1/refunded", ADMIN),
 
@@ -86,6 +91,25 @@ class RoleMatrixTest extends ApiTestBase {
             // --- o'zi haqida: har qanday xodim ---
             new Case(HttpMethod.GET, "/api/auth/me", STAFF)
     );
+
+    /** OrderService xodimni bazadan topadi — matritsa foydalanuvchilari ham bazada bo'lsin. */
+    @org.junit.jupiter.api.BeforeEach
+    void staffForEveryRole() {
+        // BCrypt sekin (ataylab) — xesh bir marta, 171 test uchun
+        if (hash == null) {
+            hash = passwordEncoder.encode("matrix-password");
+        }
+        for (String role : STAFF) {
+            uz.epay.entity.Staff s = new uz.epay.entity.Staff();
+            s.setUsername("matrix-" + role.toLowerCase());
+            s.setFullName("Matrix " + role);
+            s.setRole(uz.epay.entity.StaffRole.valueOf(role));
+            s.setPasswordHash(hash);
+            staffRepository.save(s);
+        }
+    }
+
+    private static String hash;
 
     static Stream<Arguments> matrix() {
         return MATRIX.stream().flatMap(c -> ROLES.stream()

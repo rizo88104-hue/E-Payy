@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.request.RequestPostProcessor;
@@ -21,9 +22,15 @@ import uz.epay.entity.StaffRole;
 import uz.epay.repository.BrandRepository;
 import uz.epay.repository.CategoryRepository;
 import uz.epay.repository.ProductRepository;
+import uz.epay.repository.OrderRepository;
 import uz.epay.repository.StaffRepository;
 
 import java.math.BigDecimal;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /** API testlari uchun umumiy asos: test profili (H2, demo ma'lumotsiz), har testdan oldin toza katalog. */
 @SpringBootTest
@@ -46,6 +53,8 @@ public abstract class ApiTestBase {
     @Autowired
     protected StaffRepository staffRepository;
     @Autowired
+    protected OrderRepository orderRepository;
+    @Autowired
     protected PasswordEncoder passwordEncoder;
 
     /** AdminSeeder yaratgan birinchi admin (application-test.yml). */
@@ -53,6 +62,8 @@ public abstract class ApiTestBase {
 
     @BeforeEach
     void cleanDatabase() {
+        jdbc.update("delete from order_items");
+        jdbc.update("delete from orders");
         jdbc.update("delete from product_images");
         jdbc.update("delete from products");
         jdbc.update("delete from brands");
@@ -68,6 +79,29 @@ public abstract class ApiTestBase {
         s.setRole(role);
         s.setPasswordHash(passwordEncoder.encode(password));
         return staffRepository.save(s);
+    }
+
+    private static final AtomicInteger IP_COUNTER = new AtomicInteger();
+
+    /** Har chaqiruvda yangi IP — RateLimiter (ORDER/TRACK) testlar orasida to'lib qolmasin. */
+    protected static String freshIp() {
+        int n = IP_COUNTER.incrementAndGet();
+        return "10.200." + (n / 250) % 250 + "." + n % 250;
+    }
+
+    /** Ochiq API orqali buyurtma; raqamini qaytaradi. */
+    protected String placeOrder(Product product, int quantity, String phone) throws Exception {
+        String body = "{\"customerName\":\"Ali Valiyev\",\"phone\":\"" + phone + "\",\"address\":\"Chilonzor 1-uy\","
+                + "\"region\":\"TOSHKENT_SHAHRI\",\"items\":[{\"productId\":" + product.getId()
+                + ",\"quantity\":" + quantity + "}]}";
+        MvcResult res = mvc.perform(post("/api/orders").with(csrf()).with(fromIp(freshIp()))
+                        .contentType(MediaType.APPLICATION_JSON).content(body))
+                .andExpect(status().isCreated()).andReturn();
+        return JsonPath.read(res.getResponse().getContentAsString(), "$.number");
+    }
+
+    protected Long orderId(String number) {
+        return orderRepository.findByNumber(number).orElseThrow().getId();
     }
 
     /** So'rov boshqa IP dan kelgandek (login limiti testlari bir-biriga ta'sir qilmasin). */
