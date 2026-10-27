@@ -1,0 +1,84 @@
+# Workflow nomi — GitHub'ning "Actions" bo'limida va PR'dagi tekshiruvlar ro'yxatida shu nom ko'rinadi.
+name: CI
+
+# "on" — workflow qachon ishga tushishini belgilaydi.
+on:
+  # Har qanday branch'ga ochilgan (yoki yangilangan) pull request uchun.
+  pull_request:
+  # main branch'ga to'g'ridan-to'g'ri push bo'lganda (PR birlashtirilganda ham shu ishlaydi).
+  push:
+    branches: [main]
+
+# Bir PR'ga ketma-ket bir nechta push bo'lsa, eski (hali tugamagan) ishga tushirishni bekor qiladi —
+# faqat oxirgi kod tekshiriladi, vaqt va runner tejaladi.
+concurrency:
+  # Guruh kaliti: workflow nomi + branch/PR. Bir guruhda bir vaqtda faqat bitta ishga tushirish bo'ladi.
+  group: ${{ github.workflow }}-${{ github.ref }}
+  # true — yangi ishga tushirish kelganda eskisini to'xtatadi.
+  cancel-in-progress: true
+
+# Workflow'dagi GITHUB_TOKEN huquqlari: faqat kodni o'qish. Eng kam huquq — xavfsizroq.
+permissions:
+  contents: read
+
+# "jobs" — bajariladigan ishlar. Har bir job alohida virtual mashinada ishlaydi.
+jobs:
+  # Job identifikatori (ichki nom).
+  build:
+    # PR sahifasida ko'rinadigan nom. Branch himoyasida "majburiy tekshiruv" sifatida shu nom tanlanadi.
+    name: Build va testlar
+    # Runner — GitHub beradigan bepul Ubuntu mashinasi. Unda Docker oldindan o'rnatilgan va ishlab turadi,
+    # shuning uchun Testcontainers qo'shimcha sozlashsiz ishlaydi (Docker socket: /var/run/docker.sock).
+    runs-on: ubuntu-latest
+    # Job osilib qolsa, 20 daqiqadan keyin majburan to'xtatiladi (standart 6 soat — bepul daqiqalar isrof bo'lmasin).
+    timeout-minutes: 20
+
+    # "steps" — job ichidagi qadamlar, yuqoridan pastga ketma-ket bajariladi.
+    steps:
+      # 1-qadam: repo kodini runner'ga yuklab olish (git clone).
+      - name: Kodni olish
+        uses: actions/checkout@v5
+
+      # 2-qadam: Java o'rnatish.
+      - name: Java 21 o'rnatish
+        uses: actions/setup-java@v5
+        with:
+          # JDK tarqatmasi — Eclipse Temurin (bepul, keng qo'llaniladigan OpenJDK).
+          distribution: temurin
+          # Java versiyasi — pom.xml dagi <java.version> bilan bir xil bo'lishi kerak.
+          java-version: '21'
+          # ~/.m2/repository ni keshlaydi: kutubxonalar har safar qayta yuklanmaydi, build tezlashadi.
+          # Kesh kaliti pom.xml'dan hisoblanadi — pom o'zgarsa, kesh yangilanadi.
+          cache: maven
+
+      # 3-qadam: asosiy tekshiruv — kompilyatsiya, unit testlar, integratsion testlar, jar yig'ish.
+      # -B (batch mode) — interaktiv emas rejim, logda progress-bar axlati bo'lmaydi.
+      - name: Build va testlar (./mvnw verify)
+        run: ./mvnw -B verify
+
+      # --- 2-bosqich uchun joy: frontend moslik testlari (node --test) ---
+      # Hozircha o'chirilgan. 2-bosqichda izohdan chiqariladi:
+      # - name: Node o'rnatish
+      #   uses: actions/setup-node@v5
+      #   with:
+      #     node-version: '22'
+      # - name: Moslik testlari (node --test)
+      #   run: node --test
+
+      # 4-qadam: test hisobotlarini artifact sifatida saqlash.
+      # Saqlangan hisobotni Actions → ishga tushirish sahifasi → "Artifacts" bo'limidan yuklab olish mumkin.
+      - name: Test hisobotlarini saqlash
+        # Faqat oldingi qadamlardan biri yiqilganda ishlaydi (muvaffaqiyatli build'da kerak emas).
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          # Artifact nomi (yuklab olinadigan zip fayl nomi).
+          name: test-reports
+          # Saqlanadigan papkalar: surefire — unit testlar, failsafe — integratsion testlar (*IT.java).
+          path: |
+            target/surefire-reports/
+            target/failsafe-reports/
+          # Papka topilmasa (masalan, kompilyatsiyada yiqilgan bo'lsa) — xato bermasin, shunchaki o'tkazib yuborsin.
+          if-no-files-found: ignore
+          # Artifact 14 kundan keyin avtomatik o'chiriladi.
+          retention-days: 14
