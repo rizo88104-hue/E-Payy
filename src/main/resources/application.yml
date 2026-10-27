@@ -11,6 +11,9 @@ spring:
       hibernate:
         jdbc:
           time_zone: UTC
+  mvc:
+    problemdetails:
+      enabled: true
 
 server:
   port: 8080
@@ -24,3 +27,16 @@ management:
   endpoint:
     health:
       show-details: when-authorized
+
+epay:
+  # IP bo'yicha cheklovlar: window ichida ko'pi bilan max urinish (config/RateLimiter)
+  rate-limit:
+    order:
+      max: 5
+      window: 10m
+    track:
+      max: 10
+      window: 1m
+    login:
+      max: 10
+      window: 15m
