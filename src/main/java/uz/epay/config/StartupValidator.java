@@ -7,10 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-/**
- * prod: xavfli sozlama bilan ilova ishga TUSHMAYDI — barcha xatolar bitta aniq xabarda.
- * Konstruktorda tekshiriladi, shuning uchun kontekst yuklanishi shu yerda to'xtaydi.
- */
 @Component
 @Profile("prod")
 public class StartupValidator {
@@ -56,7 +52,6 @@ public class StartupValidator {
         }
     }
 
-    /** Sinov muhiti manzili (masalan https://test.paycom.uz) yoki manzil umuman berilmagan. */
     static boolean isSandbox(String url) {
         if (!isSet(url)) {
             return true;

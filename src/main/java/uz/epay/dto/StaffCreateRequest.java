@@ -6,7 +6,6 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import uz.epay.entity.StaffRole;
 
-/** Admin: yangi xodim. Login kichik harfga o'tkaziladi; parol 10..72 belgi (BCrypt 72 baytdan ortig'ini ko'rmaydi). */
 public record StaffCreateRequest(
         @NotBlank @Pattern(regexp = "^[A-Za-z0-9._-]{3,64}$", message = "3-64 ta lotin harf, raqam, nuqta, _ yoki -")
         String username,

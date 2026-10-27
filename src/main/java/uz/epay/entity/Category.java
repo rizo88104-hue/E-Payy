@@ -23,7 +23,6 @@ public class Category {
     @Column(nullable = false, unique = true, length = 100)
     private String name;
 
-    /** Menyudagi tartib: kichigi oldinda. */
     @Column(name = "sort_order", nullable = false)
     private int sortOrder;
 }

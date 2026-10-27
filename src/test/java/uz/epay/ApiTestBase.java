@@ -32,7 +32,6 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-/** API testlari uchun umumiy asos: test profili (H2, demo ma'lumotsiz), har testdan oldin toza katalog. */
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
@@ -57,7 +56,6 @@ public abstract class ApiTestBase {
     @Autowired
     protected PasswordEncoder passwordEncoder;
 
-    /** AdminSeeder yaratgan birinchi admin (application-test.yml). */
     protected static final String SEED_ADMIN = "admin";
 
     @BeforeEach
@@ -83,13 +81,11 @@ public abstract class ApiTestBase {
 
     private static final AtomicInteger IP_COUNTER = new AtomicInteger();
 
-    /** Har chaqiruvda yangi IP — RateLimiter (ORDER/TRACK) testlar orasida to'lib qolmasin. */
     protected static String freshIp() {
         int n = IP_COUNTER.incrementAndGet();
         return "10.200." + (n / 250) % 250 + "." + n % 250;
     }
 
-    /** Ochiq API orqali buyurtma; raqamini qaytaradi. */
     protected String placeOrder(Product product, int quantity, String phone) throws Exception {
         String body = "{\"customerName\":\"Ali Valiyev\",\"phone\":\"" + phone + "\",\"address\":\"Chilonzor 1-uy\","
                 + "\"region\":\"TOSHKENT_SHAHRI\",\"items\":[{\"productId\":" + product.getId()
@@ -104,7 +100,6 @@ public abstract class ApiTestBase {
         return orderRepository.findByNumber(number).orElseThrow().getId();
     }
 
-    /** So'rov boshqa IP dan kelgandek (login limiti testlari bir-biriga ta'sir qilmasin). */
     protected static RequestPostProcessor fromIp(String ip) {
         return request -> {
             request.setRemoteAddr(ip);

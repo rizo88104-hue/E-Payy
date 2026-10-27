@@ -15,7 +15,6 @@ import java.util.Optional;
 
 public interface OrderRepository extends JpaRepository<Order, Long>, JpaSpecificationExecutor<Order> {
 
-    /** Buyurtma raqami uchun: yagona ketma-ketlik (parallel buyurtmalarda ham takrorlanmaydi). */
     @Query(value = "select nextval('order_number_seq')", nativeQuery = true)
     long nextNumber();
 

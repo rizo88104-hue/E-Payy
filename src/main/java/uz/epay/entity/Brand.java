@@ -23,23 +23,18 @@ public class Brand {
     @Column(nullable = false, unique = true, length = 100)
     private String name;
 
-    /** Havola uchun: "dell", "hpe" ... (kichik lotin harf, raqam va "-"). */
     @Column(nullable = false, unique = true, length = 64)
     private String slug;
 
-    /** Logotip havolasi, masalan /images/brands/dell.svg; bo'sh bo'lsa nomi yoziladi. */
     private String logo;
 
     @Column(length = 1000)
     private String description;
 
-    /** Kelib chiqqan mamlakat, masalan "AQSh". */
     @Column(length = 100)
     private String country;
 
-    /** Tashkil topgan yili. */
     private Integer founded;
 
-    /** Rasmiy sayt, masalan https://www.dell.com */
     private String website;
 }

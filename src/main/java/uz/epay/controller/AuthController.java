@@ -13,7 +13,6 @@ import uz.epay.dto.ChangeOwnPasswordRequest;
 import uz.epay.dto.StaffResponse;
 import uz.epay.service.StaffService;
 
-/** Kirgan xodim haqida (har qanday rol). Login/logout — Spring Security: POST /login, POST /logout. */
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -28,7 +27,6 @@ public class AuthController {
         return staff.me(auth.getName());
     }
 
-    /** O'z parolini almashtirish: boshqa qurilmalardagi sessiyalar yopiladi, joriysi qoladi. */
     @PostMapping("/password")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void changePassword(@Valid @RequestBody ChangeOwnPasswordRequest req, Authentication auth) {

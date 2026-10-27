@@ -15,10 +15,6 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 
-/**
- * Buyurtma qatori. Nom, SKU, narx va soliq kodlari buyurtma paytidagi holatida NUSXALANADI —
- * mahsulot keyin o'zgarsa ham chek va tarix o'zgarmaydi.
- */
 @Entity
 @Table(name = "order_items")
 @Getter
@@ -43,7 +39,6 @@ public class OrderItem {
     @Column(nullable = false, length = 64)
     private String sku;
 
-    /** Bir dona narxi, dollarda, tanlangan kafolat bilan. */
     @Column(name = "unit_price_usd", nullable = false, precision = 14, scale = 2)
     private BigDecimal unitPriceUsd;
 

@@ -11,11 +11,6 @@ import uz.epay.entity.ProductStatus;
 
 import java.math.BigDecimal;
 
-/**
- * Admin: mahsulot yaratish/tahrirlash. Narx dollarda.
- * version — tahrirda majburiy: mahsulot ochilgandagi qiymat; bazadagidan farq qilsa 409.
- * status berilmasa — DRAFT.
- */
 public record ProductRequest(
         @NotBlank @Size(max = 64)
         @Pattern(regexp = "^[A-Za-z0-9._-]+$", message = "faqat lotin harf, raqam, \".\", \"_\" va \"-\"")

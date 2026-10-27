@@ -26,11 +26,6 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Locale;
 
-/**
- * Xodimlar: login (UserDetailsService), boshqaruv va sessiyalar.
- * Bloklash, o'chirish va parol almashtirishda sessiyalar SessionRegistry orqali yopiladi —
- * registry xotirada, bitta ilova nusxasi uchun yetarli (bir nechta nusxa bo'lsa — Spring Session JDBC).
- */
 @Service
 public class StaffService implements UserDetailsService {
     private final StaffRepository staff;
@@ -50,8 +45,6 @@ public class StaffService implements UserDetailsService {
         return username == null ? "" : username.trim().toLowerCase(Locale.ROOT);
     }
 
-    // --- login ---
-
     @Override
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String username) {
@@ -69,7 +62,6 @@ public class StaffService implements UserDetailsService {
         staff.findByUsername(normalize(username)).ifPresent(s -> s.setLastLoginAt(Instant.now()));
     }
 
-    /** Bazada bor va bloklangan. (Yo'q xodimning sessiyasi o'chirishda registry orqali yopiladi.) */
     @Transactional(readOnly = true)
     public boolean isBlocked(String username) {
         return staff.findByUsername(normalize(username)).map(s -> !s.isActive()).orElse(false);
@@ -80,7 +72,6 @@ public class StaffService implements UserDetailsService {
         return StaffResponse.from(find(username));
     }
 
-    /** O'z parolini almashtiradi: joriy parol tekshiriladi; boshqa sessiyalari yopiladi, joriysi qoladi. */
     @Transactional
     public void changeOwnPassword(String username, String currentPassword, String newPassword) {
         Staff s = find(username);
@@ -90,8 +81,6 @@ public class StaffService implements UserDetailsService {
         setPassword(s, newPassword);
         expireSessions(s.getUsername(), currentSessionId());
     }
-
-    // --- admin ---
 
     @Transactional(readOnly = true)
     public List<StaffResponse> list() {
@@ -113,7 +102,6 @@ public class StaffService implements UserDetailsService {
         return StaffResponse.from(staff.save(s));
     }
 
-    /** Bloklash: barcha ochiq sessiyalari darhol yopiladi. O'zini va oxirgi faol adminni bloklab bo'lmaydi. */
     @Transactional
     public StaffResponse setActive(Long id, boolean active) {
         Staff s = get(id);
@@ -126,7 +114,6 @@ public class StaffService implements UserDetailsService {
         return StaffResponse.from(s);
     }
 
-    /** Admin xodim parolini almashtiradi: xodimning boshqa sessiyalari yopiladi (o'zini almashtirsa — joriysi qoladi). */
     @Transactional
     public StaffResponse resetPassword(Long id, String password) {
         Staff s = get(id);
@@ -141,14 +128,11 @@ public class StaffService implements UserDetailsService {
         requireNotSelf(s, "O'zingizni o'chira olmaysiz");
         requireNotLastAdmin(s);
         if (orders.existsByAssignedOperatorId(s.getId())) {
-            // buyurtmalar tarixi saqlanib qolsin
             throw new ConflictException(s.getFullName() + " buyurtmalar bilan ishlagan — o'chirish o'rniga bloklang");
         }
         staff.delete(s);
         expireSessions(s.getUsername(), null);
     }
-
-    // --- yordamchilar ---
 
     private void setPassword(Staff s, String password) {
         s.setPasswordHash(passwordEncoder.encode(password));
@@ -161,14 +145,12 @@ public class StaffService implements UserDetailsService {
         }
     }
 
-    /** Tizim adminsiz qolmasin. */
     private void requireNotLastAdmin(Staff s) {
         if (s.getRole() == StaffRole.ADMIN && s.isActive() && staff.countByRoleAndActiveTrue(StaffRole.ADMIN) <= 1) {
             throw new ConflictException("Oxirgi faol administratorni bloklab yoki o'chirib bo'lmaydi");
         }
     }
 
-    /** Xodimning sessiyalarini yopadi (keepSessionId dan tashqari): keyingi so'rovda u chiqarib yuboriladi. */
     private void expireSessions(String username, String keepSessionId) {
         for (Object principal : sessions.getAllPrincipals()) {
             if (principal instanceof UserDetails u && u.getUsername().equals(username)) {
@@ -181,7 +163,6 @@ public class StaffService implements UserDetailsService {
         }
     }
 
-    /** Joriy so'rov sessiyasi (yangisini yaratmaydi: getSessionId() yaratib yuborardi). */
     private static String currentSessionId() {
         if (!(RequestContextHolder.getRequestAttributes() instanceof ServletRequestAttributes attrs)) {
             return null;

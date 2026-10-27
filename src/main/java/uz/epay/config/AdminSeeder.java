@@ -14,10 +14,6 @@ import uz.epay.repository.StaffRepository;
 
 import java.time.Instant;
 
-/**
- * Xodimlar jadvali bo'sh bo'lsa, birinchi admin yaratiladi: epay.admin.username / epay.admin.password (ADMIN_PASSWORD).
- * Faqat dev'da parol berilmasa — DEV_PASSWORD (log'da ogohlantirish); prod'da StartupValidator parolni talab qiladi.
- */
 @Component
 public class AdminSeeder implements ApplicationRunner {
     private static final Logger log = LoggerFactory.getLogger(AdminSeeder.class);

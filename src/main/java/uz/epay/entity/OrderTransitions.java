@@ -4,13 +4,6 @@ import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * Ruxsat etilgan holat o'tishlari — BITTA joyda. Boshqa joyda holat to'g'ridan-to'g'ri tekshirilmaydi.
- * <pre>
- * Buyurtma: NEW → CONFIRMED → DELIVERED;  NEW | CONFIRMED → CANCELLED;  DELIVERED, CANCELLED — yakuniy.
- * To'lov:   UNPAID → PAID → REFUND_PENDING → REFUNDED.
- * </pre>
- */
 public final class OrderTransitions {
     private static final Map<OrderStatus, Set<OrderStatus>> STATUS = Map.of(
             OrderStatus.NEW, EnumSet.of(OrderStatus.CONFIRMED, OrderStatus.CANCELLED),

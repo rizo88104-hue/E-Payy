@@ -18,7 +18,6 @@ import uz.epay.service.ProductService;
 
 import java.util.List;
 
-/** Ochiq katalog: avtorizatsiyasiz, faqat o'qish. */
 @RestController
 @RequestMapping("/api")
 public class CatalogController {

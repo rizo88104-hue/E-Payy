@@ -48,7 +48,6 @@ class StartupValidatorTest {
         assertThat(StartupValidator.validate(props(STRONG, "https://epay.uz", "https://epay.uz",
                 "key", "https://test.paycom.uz")))
                 .containsExactly("Payme kaliti berilgan, lekin manzil sandbox: https://test.paycom.uz");
-        // kalit yo'q — sandbox manzil muammo emas (to'lov hali ulanmagan)
         assertThat(StartupValidator.validate(props(STRONG, "https://epay.uz", "https://epay.uz",
                 null, "https://test.paycom.uz"))).isEmpty();
     }
@@ -61,7 +60,6 @@ class StartupValidatorTest {
                 .containsExactly("PAYMENT_USD_RATE (epay.payment.usd-rate) berilmagan yoki musbat emas");
     }
 
-    /** Haqiqiy prod konteksti: zaif parol bilan ilova ishga tushmaydi. */
     @Test
     void prodContextFailsWithWeakPassword() {
         Map<String, Object> p = prodProperties();
@@ -93,7 +91,6 @@ class StartupValidatorTest {
         return p;
     }
 
-    /** Buyruq qatori argumentlari — application-prod.yml dagi ${SPRING_DATASOURCE_URL} dan ustun turadi. */
     private static ConfigurableApplicationContext start(Map<String, Object> properties) {
         String[] args = properties.entrySet().stream().map(e -> "--" + e.getKey() + "=" + e.getValue())
                 .toArray(String[]::new);

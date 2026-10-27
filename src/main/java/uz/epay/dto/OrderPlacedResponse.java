@@ -8,7 +8,6 @@ import uz.epay.entity.PaymentStatus;
 import java.math.BigDecimal;
 import java.time.Instant;
 
-/** POST /api/orders javobi xaridorga: faqat yangi buyurtma haqida. Ichki id va xodim maydonlari yo'q. */
 public record OrderPlacedResponse(String number, OrderStatus status, PaymentStatus payStatus,
                                   PaymentMethod paymentMethod, BigDecimal totalUsd, long amountUzs,
                                   Instant createdAt, Instant expiresAt) {

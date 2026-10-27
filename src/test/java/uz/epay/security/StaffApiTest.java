@@ -19,7 +19,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-/** Xodimlar API. Mock foydalanuvchi "boss" — bazadagi admin bilan bir xil nom (o'zini bloklash tekshiruvi uchun). */
 @WithMockUser(username = "boss", roles = "ADMIN")
 class StaffApiTest extends ApiTestBase {
     private Staff boss;
@@ -88,7 +87,6 @@ class StaffApiTest extends ApiTestBase {
                 .andExpect(jsonPath("$.detail").value("O'zingizni o'chira olmaysiz"));
     }
 
-    /** Oxirgi faol admin bloklanmaydi va o'chirilmaydi — tizim adminsiz qolmasin. */
     @Test
     @WithMockUser(username = "ghost", roles = "ADMIN")
     void cannotBlockOrDeleteLastActiveAdmin() throws Exception {

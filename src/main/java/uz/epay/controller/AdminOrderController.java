@@ -25,10 +25,6 @@ import uz.epay.service.OrderService;
 
 import java.time.LocalDate;
 
-/**
- * Xodimlar: buyurtmalar. Rollar — SecurityConfig (o'qish: ADMIN/OPERATOR/OWNER; o'zgartirish: ADMIN/OPERATOR;
- * refunded — faqat ADMIN). Operator cheklovi (faqat biriktirilmagan va o'ziniki) — OrderService.
- */
 @RestController
 @RequestMapping("/api/admin/orders")
 public class AdminOrderController {
@@ -38,7 +34,6 @@ public class AdminOrderController {
         this.orders = orders;
     }
 
-    /** from/to — sana (Toshkent vaqti), ikkalasi ham kiradi; q — raqam, telefon yoki ism. */
     @GetMapping
     public PageResponse<OrderSummary> list(@RequestParam(required = false) OrderStatus status,
                                            @RequestParam(required = false) PaymentStatus payStatus,

@@ -20,7 +20,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-/** Form login, IP va login nomi bo'yicha limit. Har test o'z IP va login nomi bilan — limitlar aralashmasin. */
 class LoginTest extends ApiTestBase {
     private static final String PASSWORD = "correct-horse-1";
 
@@ -55,7 +54,6 @@ class LoginTest extends ApiTestBase {
         login(username.toUpperCase(), PASSWORD, ip).andExpect(status().isOk());
     }
 
-
     @Test
     void wrongPasswordAndUnknownUserGetSameMessage() throws Exception {
         login(username, "wrong-password", ip)
@@ -67,7 +65,6 @@ class LoginTest extends ApiTestBase {
                 .andExpect(jsonPath("$.detail").value("Login yoki parol noto'g'ri"));
     }
 
-    /** Bloklangan xodim to'g'ri parol bilan ham kira olmaydi — va xabar boshqalarnikidan farq qilmaydi. */
     @Test
     void blockedStaffCannotLogin() throws Exception {
         var s = staffRepository.findByUsername(username).orElseThrow();
@@ -78,7 +75,6 @@ class LoginTest extends ApiTestBase {
                 .andExpect(jsonPath("$.detail").value("Login yoki parol noto'g'ri"));
     }
 
-    /** 10 xatodan keyin shu IP dan to'g'ri parol ham o'tmaydi; boshqa IP dan — o'tadi. */
     @Test
     void ipIsLockedAfterTenFailuresEvenWithCorrectPassword() throws Exception {
         for (int i = 1; i <= 9; i++) {
@@ -92,11 +88,9 @@ class LoginTest extends ApiTestBase {
                 .andExpect(status().isTooManyRequests())
                 .andExpect(jsonPath("$.reason").value("locked"))
                 .andExpect(header().exists("Retry-After"));
-        // blokda ham login nomi sanalmaydi — parol umuman tekshirilmadi
         login(username, PASSWORD, "10.99.99.1").andExpect(status().isOk());
     }
 
-    /** Bitta login nomiga turli IP lardan 30 xato — keyin istalgan IP dan ham (to'g'ri parol bilan) blok. */
     @Test
     void usernameIsLockedAfterManyFailuresFromDifferentIps() throws Exception {
         for (int i = 1; i <= 30; i++) {
@@ -105,7 +99,6 @@ class LoginTest extends ApiTestBase {
         login(username, PASSWORD, "10.31.0.1")
                 .andExpect(status().isTooManyRequests())
                 .andExpect(jsonPath("$.reason").value("locked"));
-        // boshqa xodim shu IP dan bemalol kiradi
         staff("other-" + username, StaffRole.OPERATOR, PASSWORD);
         login("other-" + username, PASSWORD, "10.31.0.1").andExpect(status().isOk());
     }

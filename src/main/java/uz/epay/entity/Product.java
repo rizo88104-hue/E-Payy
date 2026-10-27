@@ -50,16 +50,13 @@ public class Product {
     @JoinColumn(name = "category_id")
     private Category category;
 
-    /** Ixtiyoriy. */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "brand_id")
     private Brand brand;
 
-    /** Dollarda. */
     @Column(nullable = false, precision = 14, scale = 2)
     private BigDecimal price;
 
-    /** Har qatorda "Nomi: qiymati" (masalan "RAM: 16GB"). */
     @Column(columnDefinition = "text")
     private String specs;
 
@@ -67,21 +64,17 @@ public class Product {
     @Column(nullable = false, length = 16)
     private ProductStatus status = ProductStatus.DRAFT;
 
-    /** Bir vaqtda tahrirlashdan himoya (optimistik blok). */
     @Version
     @Column(nullable = false)
     @Setter(lombok.AccessLevel.NONE)
     private Long version;
 
-    /** Soliq: MXIK (IKPU) kodi, 17 raqam. */
     @Column(name = "mxik_code", length = 17)
     private String mxikCode;
 
-    /** Soliq: qadoq (o'lchov birligi) kodi. */
     @Column(name = "package_code", length = 20)
     private String packageCode;
 
-    /** QQS foizi, masalan 12.00. */
     @Column(name = "vat_percent", precision = 5, scale = 2)
     private BigDecimal vatPercent;
 
@@ -109,12 +102,10 @@ public class Product {
         updatedAt = Instant.now();
     }
 
-    /** Asosiy rasm (birinchisi) yoki null. */
     public String mainImageUrl() {
         return images.isEmpty() ? null : images.getFirst().getUrl();
     }
 
-    /** Rasmni ro'yxat oxiriga qo'shadi. */
     public ProductImage addImage(String url) {
         ProductImage img = new ProductImage(this, url);
         images.add(img);
@@ -122,7 +113,6 @@ public class Product {
         return img;
     }
 
-    /** Ro'yxat tartibi o'zgargach: sortOrder 0..n. */
     public void reindexImages() {
         for (int i = 0; i < images.size(); i++) {
             images.get(i).setSortOrder(i);

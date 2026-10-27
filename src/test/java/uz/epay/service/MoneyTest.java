@@ -13,17 +13,15 @@ class MoneyTest {
 
     @ParameterizedTest(name = "{0} $ × {1} = {2} so''m")
     @CsvSource({
-            // yaxlitlash chegarasi: 0.5 so'm yuqoriga, undan kami pastga
-            "0.01, 12650.49, 127",       // 126.5049 -> 127
-            "1.00, 12650.49, 12650",     // .49 -> pastga
-            "1.00, 12650.50, 12651",     // .50 -> yuqoriga (HALF_UP, banker's emas)
-            "1.00, 12650.51, 12651",     // .51 -> yuqoriga
-            "0.50, 1.00, 1",             // 0.5 so'm -> 1
-            "0.49, 1.00, 0",             // 0.49 so'm -> 0
-            "2.50, 1.00, 3",             // HALF_EVEN bo'lganda 2 chiqardi
+            "0.01, 12650.49, 127",
+            "1.00, 12650.49, 12650",
+            "1.00, 12650.50, 12651",
+            "1.00, 12650.51, 12651",
+            "0.50, 1.00, 1",
+            "0.49, 1.00, 0",
+            "2.50, 1.00, 3",
             "0.00, 12650.00, 0",
-            "1299.99, 12650.00, 16444874", // 16444873.5 -> 16444874
-            // katta summa: 1 mlrd dollar
+            "1299.99, 12650.00, 16444874",
             "1000000000.00, 12650.00, 12650000000000"
     })
     void toUzs_roundsHalfUp(String usd, String rate, long expected) {

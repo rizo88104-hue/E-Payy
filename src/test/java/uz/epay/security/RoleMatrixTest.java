@@ -18,10 +18,6 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.request;
 
-/**
- * TZ 7-bo'lim jadvali: har bir rol × endpoint. "Ruxsat" — javob 401/403 EMAS (hali controller'i yo'q yo'llar
- * 404 beradi, noto'g'ri tana 400 — bu ham xavfsizlikdan o'tgani); "rad" — rol uchun 403, mehmon uchun 401.
- */
 class RoleMatrixTest extends ApiTestBase {
     static final String ANON = "ANON";
     static final List<String> ROLES = List.of(ANON, "ADMIN", "OPERATOR", "WAREHOUSE", "OWNER");
@@ -40,14 +36,12 @@ class RoleMatrixTest extends ApiTestBase {
     }
 
     static final List<Case> MATRIX = List.of(
-            // --- ochiq (xaridor login qilmaydi) ---
             new Case(HttpMethod.GET, "/api/products", EVERYONE),
             new Case(HttpMethod.GET, "/api/categories", EVERYONE),
             new Case(HttpMethod.GET, "/api/regions", EVERYONE),
             new Case(HttpMethod.POST, "/api/orders", EVERYONE),
             new Case(HttpMethod.POST, "/api/orders/track", EVERYONE),
 
-            // --- katalog: ADMIN tahrir, OPERATOR/OWNER ko'radi, WAREHOUSE mavjudini tahrirlaydi ---
             new Case(HttpMethod.GET, "/api/admin/products", STAFF),
             new Case(HttpMethod.GET, "/api/admin/products/1", STAFF),
             new Case(HttpMethod.POST, "/api/admin/products", ADMIN),
@@ -62,40 +56,30 @@ class RoleMatrixTest extends ApiTestBase {
             new Case(HttpMethod.POST, "/api/admin/brands", ADMIN),
             new Case(HttpMethod.DELETE, "/api/admin/brands/1", ADMIN),
 
-            // --- ombor: ADMIN/WAREHOUSE tahrir, OWNER ko'radi, OPERATOR yo'q ---
             new Case(HttpMethod.GET, "/api/admin/stock", ADMIN, WAREHOUSE, OWNER),
             new Case(HttpMethod.PUT, "/api/admin/stock/1", ADMIN, WAREHOUSE),
 
-            // --- buyurtmalar: ADMIN/OPERATOR ishlaydi, OWNER ko'radi, WAREHOUSE yo'q ---
             new Case(HttpMethod.GET, "/api/admin/orders", ADMIN, OPERATOR, OWNER),
             new Case(HttpMethod.GET, "/api/admin/orders/1", ADMIN, OPERATOR, OWNER),
             new Case(HttpMethod.POST, "/api/admin/orders/1/take", ADMIN, OPERATOR),
             new Case(HttpMethod.PATCH, "/api/admin/orders/1/status", ADMIN, OPERATOR),
             new Case(HttpMethod.PATCH, "/api/admin/orders/1/note", ADMIN, OPERATOR),
-            // xavfsizlik qatlamidan operator o'tadi; "boshqaga biriktirish — faqat admin" OrderService da
-            // (AdminOrderApiTest.onlyAdminAssignsToOthers)
             new Case(HttpMethod.PUT, "/api/admin/orders/1/operator", ADMIN, OPERATOR),
-            // pul qaytarildi (REFUNDED) — faqat admin
             new Case(HttpMethod.PATCH, "/api/admin/orders/1/refunded", ADMIN),
 
-            // --- analitika: ADMIN/OWNER; WAREHOUSE — faqat ombor hisoboti ---
             new Case(HttpMethod.GET, "/api/admin/reports/sales", ADMIN, OWNER),
             new Case(HttpMethod.GET, "/api/admin/reports/stock", ADMIN, OWNER, WAREHOUSE),
 
-            // --- xodimlar va sozlamalar: faqat ADMIN ---
             new Case(HttpMethod.GET, "/api/admin/staff", ADMIN),
             new Case(HttpMethod.POST, "/api/admin/staff", ADMIN),
             new Case(HttpMethod.PATCH, "/api/admin/staff/1/active", ADMIN),
             new Case(HttpMethod.GET, "/api/admin/settings", ADMIN),
 
-            // --- o'zi haqida: har qanday xodim ---
             new Case(HttpMethod.GET, "/api/auth/me", STAFF)
     );
 
-    /** OrderService xodimni bazadan topadi — matritsa foydalanuvchilari ham bazada bo'lsin. */
     @org.junit.jupiter.api.BeforeEach
     void staffForEveryRole() {
-        // BCrypt sekin (ataylab) — xesh bir marta, 171 test uchun
         if (hash == null) {
             hash = passwordEncoder.encode("matrix-password");
         }
@@ -134,10 +118,6 @@ class RoleMatrixTest extends ApiTestBase {
         }
     }
 
-    /**
-     * Jadval o'zi to'g'rimi: har rol kamida bir joyga kiradi; ADMIN dan boshqa har rol kamida bir joyda rad etiladi
-     * (jadval "hammasi ochiq" bo'lib qolmasin); ADMIN esa hamma xodim yo'llariga kiradi.
-     */
     @org.junit.jupiter.api.Test
     void matrixIsConsistent() {
         for (String role : ROLES) {

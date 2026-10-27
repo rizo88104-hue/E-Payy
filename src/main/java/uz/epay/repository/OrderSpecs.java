@@ -11,19 +11,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-/** Xodimlar ro'yxati filtrlari (Criteria API — null parametrlar PostgreSQL'da muammo bermasin). */
 public final class OrderSpecs {
     private static final char ESCAPE = '\\';
 
     private OrderSpecs() {
     }
 
-    /**
-     * @param from      shu vaqtdan (kiradi), null — chegarasiz
-     * @param to        shu vaqtgacha (kirmaydi), null — chegarasiz
-     * @param q         raqam, ism yoki telefon (raqamlari) ichida
-     * @param visibleTo operator id: faqat biriktirilmagan va o'ziniki; null — hammasi
-     */
     public static Specification<Order> filter(OrderStatus status, PaymentStatus payStatus, Instant from, Instant to,
                                               String q, Long visibleTo) {
         return (root, query, cb) -> {

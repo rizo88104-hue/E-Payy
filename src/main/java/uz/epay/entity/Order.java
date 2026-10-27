@@ -36,14 +36,12 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    /** EP-{yil}-{NNNNNN}: xaridorga ko'rsatiladigan raqam (id emas). */
     @Column(nullable = false, unique = true, length = 20, updatable = false)
     private String number;
 
     @Column(name = "customer_name", nullable = false, length = 100)
     private String customerName;
 
-    /** +998XXXXXXXXX (PhoneNumbers.normalize). */
     @Column(nullable = false, length = 13)
     private String phone;
 
@@ -66,15 +64,12 @@ public class Order {
     @Column(name = "payment_method", nullable = false, length = 8)
     private PaymentMethod paymentMethod = PaymentMethod.CASH;
 
-    /** Jami, dollarda (qatorlar yig'indisi). */
     @Column(name = "total_usd", nullable = false, precision = 14, scale = 2, updatable = false)
     private BigDecimal totalUsd;
 
-    /** Buyurtma paytidagi kurs (1 $ = ? so'm). */
     @Column(name = "usd_rate", nullable = false, precision = 12, scale = 2, updatable = false)
     private BigDecimal usdRate;
 
-    /** Qotirilgan summa, butun so'm: Money.toUzs(totalUsd, usdRate). Kurs keyin o'zgarsa ham o'zgarmaydi. */
     @Column(name = "amount_uzs", nullable = false, updatable = false)
     private long amountUzs;
 
@@ -122,7 +117,6 @@ public class Order {
         }
     }
 
-    /** OrderService yaratish paytida (expires_at hisoblash uchun) vaqtni oldindan qo'yadi. */
     public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
     }

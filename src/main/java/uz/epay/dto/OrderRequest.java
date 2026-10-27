@@ -12,10 +12,6 @@ import uz.epay.entity.Region;
 
 import java.util.List;
 
-/**
- * Xaridor buyurtmasi. Narx yo'q — u faqat serverda hisoblanadi. Telefon formati va takroriy qatorlar
- * (birlashtirilgandan keyingi miqdor) OrderService da tekshiriladi. paymentMethod berilmasa — CASH.
- */
 public record OrderRequest(
         @NotBlank @Size(min = 2, max = 100) String customerName,
         @NotBlank String phone,
@@ -24,7 +20,6 @@ public record OrderRequest(
         PaymentMethod paymentMethod,
         @NotEmpty @Size(max = 20) @Valid List<Item> items) {
 
-    /** warrantyYears berilmasa — narx ichidagi eng qisqa kafolat. */
     public record Item(@NotNull Long productId, @Min(1) @Max(10) int quantity, Integer warrantyYears) {
     }
 }

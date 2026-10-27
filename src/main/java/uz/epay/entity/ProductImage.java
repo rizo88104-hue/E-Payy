@@ -27,11 +27,9 @@ public class ProductImage {
     @JoinColumn(name = "product_id")
     private Product product;
 
-    /** "/uploads/{uuid}.webp" (ImageStorage beradi). */
     @Column(nullable = false)
     private String url;
 
-    /** 0 — asosiy rasm. */
     @Column(name = "sort_order", nullable = false)
     private int sortOrder;
 

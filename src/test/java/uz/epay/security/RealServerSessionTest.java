@@ -23,10 +23,6 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-/**
- * Haqiqiy Tomcat (tasodifiy port) va haqiqiy cookie'lar: MockMvc ko'rsatmaydigan narsalar —
- * JSESSIONID atributlari (HttpOnly, SameSite=Lax), login'dan keyin sessiya ID almashishi, XSRF-TOKEN oqimi.
- */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 class RealServerSessionTest {
@@ -62,7 +58,6 @@ class RealServerSessionTest {
         s.setPasswordHash(passwordEncoder.encode(PASSWORD));
         staffRepository.save(s);
 
-        // 1) himoyalangan sahifa: login'ga yo'naltiriladi va sessiya ochiladi (so'rov eslab qolinadi)
         HttpResponse<String> page = http.send(HttpRequest.newBuilder(uri("/admin.html")).GET().build(),
                 HttpResponse.BodyHandlers.ofString());
         assertThat(page.statusCode()).isEqualTo(302);
@@ -73,7 +68,6 @@ class RealServerSessionTest {
         List<String> setCookies = page.headers().allValues("Set-Cookie");
         String sessionCookie = setCookies.stream().filter(c -> c.startsWith("JSESSIONID=")).findFirst().orElseThrow();
         assertThat(sessionCookie).containsIgnoringCase("HttpOnly").containsIgnoringCase("SameSite=Lax");
-        // test profili http — Secure faqat prod'da (application-prod.yml)
         assertThat(sessionCookie).doesNotContainIgnoringCase("Secure");
 
         String xsrf = cookie("XSRF-TOKEN");
@@ -81,7 +75,6 @@ class RealServerSessionTest {
         String xsrfCookie = setCookies.stream().filter(c -> c.startsWith("XSRF-TOKEN=")).findFirst().orElseThrow();
         assertThat(xsrfCookie).as("frontend JS o'qiy olishi kerak").doesNotContainIgnoringCase("HttpOnly");
 
-        // 2) login (X-XSRF-TOKEN sarlavhasi bilan)
         String form = "username=" + URLEncoder.encode(username, StandardCharsets.UTF_8)
                 + "&password=" + URLEncoder.encode(PASSWORD, StandardCharsets.UTF_8);
         HttpResponse<String> login = http.send(HttpRequest.newBuilder(uri("/login"))
@@ -93,16 +86,13 @@ class RealServerSessionTest {
         assertThat(login.statusCode()).as(login.body()).isEqualTo(200);
         assertThat(login.body()).contains("\"username\":\"" + username + "\"");
 
-        // session fixation'ga qarshi: yangi ID
         String after = cookie("JSESSIONID");
         assertThat(after).isNotNull().isNotEqualTo(before);
 
-        // 3) yangi sessiya bilan API ishlaydi
         HttpResponse<String> me = http.send(HttpRequest.newBuilder(uri("/api/auth/me"))
                 .header("Accept", "application/json").GET().build(), HttpResponse.BodyHandlers.ofString());
         assertThat(me.statusCode()).isEqualTo(200);
 
-        // 4) CSRF tokensiz POST — 403, token bilan — o'tadi (token login'dan keyin yangilangan)
         HttpResponse<String> noToken = http.send(HttpRequest.newBuilder(uri("/api/auth/password"))
                         .header("Content-Type", "application/json")
                         .POST(HttpRequest.BodyPublishers.ofString("{}")).build(),

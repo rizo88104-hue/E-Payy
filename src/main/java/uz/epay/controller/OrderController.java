@@ -20,7 +20,6 @@ import uz.epay.service.OrderService;
 import java.util.Arrays;
 import java.util.List;
 
-/** Xaridor (login yo'q): buyurtma berish, kuzatish va hududlar ro'yxati. IP — RateLimiter uchun. */
 @RestController
 @RequestMapping("/api")
 public class OrderController {

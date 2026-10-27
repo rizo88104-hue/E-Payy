@@ -18,7 +18,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-/** Ochiq katalog: avtorizatsiyasiz; faqat PUBLISHED ko'rinadi. */
 class CatalogApiTest extends ApiTestBase {
     private Category laptops;
     private Category cpus;
@@ -97,7 +96,6 @@ class CatalogApiTest extends ApiTestBase {
                 .andExpect(jsonPath("$.items[*].sku", contains("LAP-7")));
     }
 
-    /** % va _ oddiy belgi sifatida qidiriladi, "hamma narsa" ma'nosida emas. */
     @Test
     void searchEscapesLikeWildcards() throws Exception {
         mvc.perform(get("/api/products").param("q", "100%"))

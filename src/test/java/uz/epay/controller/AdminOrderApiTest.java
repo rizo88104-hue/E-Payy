@@ -32,10 +32,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-/**
- * Xodimlar: buyurtmalar ro'yxati, holatlar, operator cheklovlari. Operatorlar bazada bor (op1, op2) —
- * OrderService "kim" ekanini login nomi bo'yicha topadi.
- */
 @RecordApplicationEvents
 class AdminOrderApiTest extends ApiTestBase {
     @Autowired
@@ -74,8 +70,6 @@ class AdminOrderApiTest extends ApiTestBase {
         orderRepository.save(o);
     }
 
-    // --- ro'yxat va filtrlar ---
-
     @Test
     void listWithFiltersForAdmin() throws Exception {
         String a = placeOrder(product, 1, "+998901111111");
@@ -90,14 +84,12 @@ class AdminOrderApiTest extends ApiTestBase {
                 .andExpect(jsonPath("$.items[*].number", containsInAnyOrder(a)));
         mvc.perform(get("/api/admin/orders").with(admin()).param("payStatus", "PAID"))
                 .andExpect(jsonPath("$.totalElements").value(0));
-        // qidiruv: raqam, telefon raqamlari, ism
         mvc.perform(get("/api/admin/orders").with(admin()).param("q", a.toLowerCase()))
                 .andExpect(jsonPath("$.items[*].number", containsInAnyOrder(a)));
         mvc.perform(get("/api/admin/orders").with(admin()).param("q", "90 222"))
                 .andExpect(jsonPath("$.items[*].number", containsInAnyOrder(b)));
         mvc.perform(get("/api/admin/orders").with(admin()).param("q", "valiyev"))
                 .andExpect(jsonPath("$.totalElements").value(2));
-        // sana: bugun (Toshkent) — ikkalasi; kecha gacha — hech biri
         LocalDate today = LocalDate.now(OrderService.TASHKENT);
         mvc.perform(get("/api/admin/orders").with(admin()).param("from", today.toString()).param("to", today.toString()))
                 .andExpect(jsonPath("$.totalElements").value(2));
@@ -118,12 +110,9 @@ class AdminOrderApiTest extends ApiTestBase {
                 .andExpect(jsonPath("$.usdRate").value(12650.00))
                 .andExpect(jsonPath("$.items[0].sku").value("P-1"))
                 .andExpect(jsonPath("$.items[0].quantity").value(2));
-        // egasi faqat ko'radi
         mvc.perform(get("/api/admin/orders/{id}", id).with(as("owner", StaffRole.OWNER))).andExpect(status().isOk());
         changeStatus(id, "CONFIRMED", as("owner", StaffRole.OWNER)).andExpect(status().isForbidden());
     }
-
-    // --- operator cheklovlari ---
 
     @Test
     void operatorSeesOnlyUnassignedAndOwn() throws Exception {
@@ -145,7 +134,6 @@ class AdminOrderApiTest extends ApiTestBase {
                 .andExpect(status().isForbidden());
         mvc.perform(post("/api/admin/orders/{id}/take", others).with(as("op1", StaffRole.OPERATOR)).with(csrf()))
                 .andExpect(status().isForbidden());
-        // admin hammasini ko'radi
         mvc.perform(get("/api/admin/orders/{id}", others).with(admin())).andExpect(status().isOk());
     }
 
@@ -157,11 +145,9 @@ class AdminOrderApiTest extends ApiTestBase {
         mvc.perform(post("/api/admin/orders/{id}/take", a).with(as("op1", StaffRole.OPERATOR)).with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.operatorId").value(op1.getId()));
-        // op2 endi uni ko'rmaydi
         mvc.perform(get("/api/admin/orders/{id}", a).with(as("op2", StaffRole.OPERATOR)))
                 .andExpect(status().isForbidden());
 
-        // biriktirilmagan buyurtmani tasdiqlasa — avtomatik unga biriktiriladi
         changeStatus(b, "CONFIRMED", as("op2", StaffRole.OPERATOR))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.operatorId").value(op2.getId()));
@@ -182,14 +168,11 @@ class AdminOrderApiTest extends ApiTestBase {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.operatorId").value(op2.getId()))
                 .andExpect(jsonPath("$.operatorName").value("Test op2"));
-        // omborchiga biriktirib bo'lmaydi
         Staff w = staff("wh1", StaffRole.WAREHOUSE, "warehouse-pass");
         mvc.perform(put("/api/admin/orders/{id}/operator", id).with(admin()).with(csrf())
                         .contentType(MediaType.APPLICATION_JSON).content("{\"operatorId\":" + w.getId() + "}"))
                 .andExpect(status().isBadRequest());
     }
-
-    // --- holat o'tishlari ---
 
     @Test
     void validTransitionsAndEvents() throws Exception {
@@ -206,27 +189,24 @@ class AdminOrderApiTest extends ApiTestBase {
         changeStatus(id, "DELIVERED", admin())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.detail").value("Holatni o'zgartirib bo'lmaydi: NEW → DELIVERED"));
-        changeStatus(id, "NEW", admin()).andExpect(status().isOk());   // o'zgarishsiz — xato emas
+        changeStatus(id, "NEW", admin()).andExpect(status().isOk());
 
         changeStatus(id, "CANCELLED", admin()).andExpect(status().isOk());
-        // CANCELLED — yakuniy
         changeStatus(id, "CONFIRMED", admin()).andExpect(status().isBadRequest());
         changeStatus(id, "DELIVERED", admin()).andExpect(status().isBadRequest());
 
         Long done = orderId(placeOrder(product, 1, "+998902222222"));
         changeStatus(done, "CONFIRMED", admin());
         changeStatus(done, "DELIVERED", admin());
-        // DELIVERED — yakuniy
         changeStatus(done, "CANCELLED", admin()).andExpect(status().isBadRequest());
         changeStatus(done, "BOSHQA", admin()).andExpect(status().isBadRequest());
     }
 
-    /** To'langan buyurtma bekor qilinsa — REFUND_PENDING; "pul qaytarildi" (REFUNDED) — faqat admin. */
     @Test
     void cancellingPaidOrderNeedsRefund() throws Exception {
         Long id = orderId(placeOrder(product, 1, "+998901111111"));
         orderService.markPaid(id);
-        orderService.markPaid(id);   // takroriy callback — hech narsa qilmaydi
+        orderService.markPaid(id);
         assertThat(orderRepository.findById(id).orElseThrow().getPaidAt()).isNotNull();
 
         changeStatus(id, "CANCELLED", as("op1", StaffRole.OPERATOR))
@@ -239,7 +219,6 @@ class AdminOrderApiTest extends ApiTestBase {
         mvc.perform(patch("/api/admin/orders/{id}/refunded", id).with(admin()).with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.payStatus").value("REFUNDED"));
-        // ikkinchi marta — o'tish yo'q
         mvc.perform(patch("/api/admin/orders/{id}/refunded", id).with(admin()).with(csrf()))
                 .andExpect(status().isBadRequest());
 
@@ -254,12 +233,10 @@ class AdminOrderApiTest extends ApiTestBase {
         org.assertj.core.api.Assertions.assertThatThrownBy(() -> orderService.markPaid(id))
                 .isInstanceOf(uz.epay.exception.ConflictException.class);
         assertThat(orderRepository.findById(id).orElseThrow().getPayStatus()).isEqualTo(PaymentStatus.UNPAID);
-        // REFUND_PENDING bo'lmagan buyurtmani REFUNDED qilib bo'lmaydi
         mvc.perform(patch("/api/admin/orders/{id}/refunded", id).with(admin()).with(csrf()))
                 .andExpect(status().isBadRequest());
     }
 
-    /** Buyurtmalar bilan ishlagan xodim o'chirilmaydi — tarix saqlanadi (bloklash mumkin). */
     @Test
     void staffWithOrdersCannotBeDeleted() throws Exception {
         Long id = orderId(placeOrder(product, 1, "+998901111111"));

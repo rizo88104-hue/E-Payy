@@ -23,7 +23,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-/** Admin API. Rollar 1.3 da — hozircha istalgan kirgan foydalanuvchi (@WithMockUser). */
 @WithMockUser(roles = "ADMIN")
 class AdminProductApiTest extends ApiTestBase {
     private Category cpus;
@@ -55,7 +54,6 @@ class AdminProductApiTest extends ApiTestBase {
                 .andReturn();
     }
 
-    /** @WithMockUser klass darajasida — anonymous() shu so'rov uchun uni bekor qiladi. */
     @Test
     void anonymousIsRejected() throws Exception {
         mvc.perform(get("/api/admin/products").with(anonymous())).andExpect(status().isUnauthorized());
@@ -87,7 +85,6 @@ class AdminProductApiTest extends ApiTestBase {
                 .andExpect(jsonPath("$.name").value("AMD Ryzen 5 5600X BOX"))
                 .andExpect(jsonPath("$.status").value("PUBLISHED"))
                 .andExpect(jsonPath("$.version").value(1));
-        // endi ochiq katalogda ko'rinadi
         mvc.perform(get("/api/products/{id}", id)).andExpect(status().isOk());
 
         mvc.perform(delete("/api/admin/products/{id}", id).with(csrf()))
@@ -106,7 +103,6 @@ class AdminProductApiTest extends ApiTestBase {
                         .contentType(MediaType.APPLICATION_JSON).content(toJson(first)))
                 .andExpect(status().isOk());
 
-        // ikkinchi admin hali eski (0) version bilan saqlamoqchi
         Map<String, Object> second = productBody("AMD-5600X");
         second.put("version", 0);
         second.put("price", "99.99");
@@ -115,7 +111,6 @@ class AdminProductApiTest extends ApiTestBase {
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.reason").value("version"))
                 .andExpect(jsonPath("$.detail").value("Boshqa joyda o'zgartirildi, sahifani yangilang"));
-        // birinchisining narxi saqlanib qoldi
         mvc.perform(get("/api/admin/products/{id}", id)).andExpect(jsonPath("$.price").value(129.99));
     }
 
@@ -177,8 +172,6 @@ class AdminProductApiTest extends ApiTestBase {
                 .andExpect(status().isForbidden());
     }
 
-    // --- kategoriyalar ---
-
     @Test
     void categoryCrud() throws Exception {
         MvcResult created = mvc.perform(post("/api/admin/categories").with(csrf())
@@ -209,8 +202,6 @@ class AdminProductApiTest extends ApiTestBase {
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.detail").value("Kategoriyada mahsulotlar bor, uni o'chirib bo'lmaydi"));
     }
-
-    // --- brendlar ---
 
     @Test
     void brandCrud() throws Exception {

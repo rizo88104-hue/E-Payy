@@ -4,7 +4,6 @@ import uz.epay.entity.Product;
 
 import java.math.BigDecimal;
 
-/** Katalog kartasi: ro'yxatda ko'rsatish uchun minimal ma'lumot. */
 public record ProductCard(Long id, String sku, String name, BigDecimal price, String imageUrl,
                           Long categoryId, String categoryName, Long brandId, String brandName) {
 

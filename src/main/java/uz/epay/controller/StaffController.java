@@ -20,7 +20,6 @@ import uz.epay.service.StaffService;
 
 import java.util.List;
 
-/** Xodimlar boshqaruvi — faqat ADMIN (SecurityConfig). */
 @RestController
 @RequestMapping("/api/admin/staff")
 public class StaffController {
@@ -41,7 +40,6 @@ public class StaffController {
         return staff.create(req);
     }
 
-    /** Bloklash / blokdan chiqarish. */
     @PatchMapping("/{id}/active")
     public StaffResponse setActive(@PathVariable Long id, @Valid @RequestBody StaffActiveRequest req) {
         return staff.setActive(id, req.active());

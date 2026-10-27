@@ -17,7 +17,6 @@ import uz.epay.dto.CategoryRequest;
 import uz.epay.service.BrandService;
 import uz.epay.service.CategoryService;
 
-/** Admin: kategoriyalar va brendlar. Ro'yxatlar ochiq API dagi bilan bir xil (GET /api/categories, /api/brands). */
 @RestController
 @RequestMapping("/api/admin")
 public class AdminCatalogController {

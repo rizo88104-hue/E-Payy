@@ -7,7 +7,6 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 
-/** Mahsulot sahifasi va admin tahriri. version — tahrirda qaytarib yuboriladi (optimistik blok). */
 public record ProductDetails(Long id, String sku, String name, String description, BigDecimal price, String specs,
                              ProductStatus status, Long version, CategoryDto category, BrandDto brand,
                              List<ImageDto> images, String mxikCode, String packageCode, BigDecimal vatPercent,

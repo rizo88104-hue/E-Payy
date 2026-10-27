@@ -9,11 +9,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-/**
- * CSRF token kechiktirib yuklanadi — so'ralmaguncha XSRF-TOKEN cookie yozilmaydi va frontend (build'siz JS)
- * birinchi POST'ni yubora olmaydi. Bu filtr har javobda tokenni yuklaydi, shunda cookie doim bor.
- * Bean emas — faqat Security zanjirida (CsrfFilter'dan keyin).
- */
 class CsrfCookieFilter extends OncePerRequestFilter {
 
     @Override

@@ -37,7 +37,6 @@ import java.util.stream.Collectors;
 @Service
 public class ProductService {
     public static final int MAX_IMAGES = 10;
-    /** Katalog tartibi: yangilari birinchi. */
     private static final Sort NEWEST_FIRST = Sort.by(Sort.Order.desc("createdAt"), Sort.Order.desc("id"));
 
     private final ProductRepository products;
@@ -57,15 +56,11 @@ public class ProductService {
         this.warehouseCanEditPrice = props.security().warehouseCanEditPrice();
     }
 
-    // --- ochiq katalog ---
-
-    /** Faqat PUBLISHED. */
     @Transactional(readOnly = true)
     public PageResponse<ProductCard> catalog(String q, Long categoryId, Long brandId, int page, int size) {
         return search(q, categoryId, brandId, ProductStatus.PUBLISHED, page, size);
     }
 
-    /** Faqat PUBLISHED; DRAFT/ARCHIVED — xuddi yo'qdek 404. */
     @Transactional(readOnly = true)
     public ProductDetails published(Long id) {
         Product p = products.findWithDetailsById(id)
@@ -74,9 +69,6 @@ public class ProductService {
         return ProductDetails.from(p);
     }
 
-    // --- admin ---
-
-    /** Barcha statuslar (status null bo'lsa). */
     @Transactional(readOnly = true)
     public PageResponse<ProductCard> search(String q, Long categoryId, Long brandId, ProductStatus status,
                                             int page, int size) {
@@ -97,7 +89,6 @@ public class ProductService {
         return ProductDetails.from(products.saveAndFlush(apply(new Product(), req)));
     }
 
-    /** req.version — mahsulot ochilgandagi qiymat; orada boshqa joyda o'zgartirilgan bo'lsa 409. */
     @Transactional
     public ProductDetails update(Long id, ProductRequest req) {
         if (req.version() == null) {
@@ -111,11 +102,9 @@ public class ProductService {
             throw new ConflictException("Bu SKU bilan mahsulot allaqachon bor: " + req.sku());
         }
         checkWarehouseLimits(p, req);
-        // flush — yangi version javobga tushishi uchun (keyingi tahrir shu bilan yuboriladi)
         return ProductDetails.from(products.saveAndFlush(apply(p, req)));
     }
 
-    /** Buyurtmalarda ishlatilgan mahsulot o'chirilmaydi — ARCHIVED qilinadi (buyurtma tarixi buzilmasin). */
     @Transactional
     public DeleteResult delete(Long id) {
         Product p = load(id);
@@ -125,14 +114,10 @@ public class ProductService {
         }
         List<String> urls = p.getImages().stream().map(ProductImage::getUrl).toList();
         products.delete(p);
-        // fayllar faqat baza o'chirgandan keyin
         AfterTransaction.onCommit(() -> urls.forEach(storage::delete));
         return new DeleteResult(DeleteResult.Outcome.DELETED);
     }
 
-    // --- rasmlar ---
-
-    /** Rasm ro'yxat oxiriga qo'shiladi (birinchisi bo'lsa — asosiy). */
     @Transactional
     public ProductDetails addImage(Long id, MultipartFile file) {
         Product p = load(id);
@@ -140,7 +125,6 @@ public class ProductService {
             throw new BadRequestException("Bitta mahsulotga ko'pi bilan " + MAX_IMAGES + " ta rasm qo'shish mumkin");
         }
         String url = storage.save(file);
-        // baza yozuvi bekor bo'lsa, diskda yetim fayl qolmasin
         AfterTransaction.onRollback(() -> storage.delete(url));
         p.addImage(url);
         return ProductDetails.from(products.saveAndFlush(p));
@@ -157,7 +141,6 @@ public class ProductService {
         return ProductDetails.from(products.saveAndFlush(p));
     }
 
-    /** ids — mahsulotning barcha rasmlari yangi tartibda; birinchisi asosiy bo'ladi. */
     @Transactional
     public ProductDetails reorderImages(Long id, List<Long> ids) {
         Product p = load(id);
@@ -170,12 +153,6 @@ public class ProductService {
         return ProductDetails.from(products.saveAndFlush(p));
     }
 
-    // --- yordamchilar ---
-
-    /**
-     * Omborchi (TZ 7): mavjud mahsulotni tahrirlaydi va nashr qiladi (faqat DRAFT/PUBLISHED, arxivlash — admin),
-     * narxni esa faqat epay.security.warehouse-can-edit-price=true bo'lsa o'zgartiradi.
-     */
     private void checkWarehouseLimits(Product p, ProductRequest req) {
         if (!CurrentUser.hasRole(StaffRole.WAREHOUSE) || CurrentUser.hasRole(StaffRole.ADMIN)) {
             return;
@@ -209,7 +186,6 @@ public class ProductService {
         p.setPrice(req.price());
         p.setSpecs(req.specs());
         if (req.status() != null) {
-            // berilmasa: yangi mahsulot DRAFT bo'lib qoladi, tahrirda esa status o'zgarmaydi
             p.setStatus(req.status());
         }
         p.setMxikCode(req.mxikCode());

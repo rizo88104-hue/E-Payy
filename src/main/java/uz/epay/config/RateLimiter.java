@@ -10,7 +10,6 @@ import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-
 @Component
 @EnableConfigurationProperties(RateLimitProperties.class)
 public class RateLimiter {
@@ -61,7 +60,6 @@ public class RateLimiter {
         return w != null && clock.millis() - w.start() < rule.window().toMillis() && w.count() >= rule.max();
     }
 
-    /** Blok tugashigacha qolgan vaqt; bloklanmagan bo'lsa — ZERO. */
     public Duration blockedFor(Limit limit, String key) {
         if (!blocked(limit, key)) {
             return Duration.ZERO;
@@ -70,7 +68,6 @@ public class RateLimiter {
         return Duration.ofMillis(Math.max(0, rules.get(limit).window().toMillis() - (clock.millis() - w.start())));
     }
 
-    /** Hisoblagichni nolga tushiradi (masalan, login nomi bo'yicha muvaffaqiyatli kirishdan keyin). */
     public void reset(Limit limit, String key) {
         hits.remove(key(limit, key));
     }

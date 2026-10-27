@@ -24,19 +24,6 @@ import java.io.IOException;
 import java.time.Duration;
 import java.util.List;
 
-/**
- * Xavfsizlik: form login + server sessiyasi, CSRF (cookie + X-XSRF-TOKEN), rollar TZ 7-bo'lim bo'yicha.
- * Huquq bu yerda (yo'l + metod) va servislarda (masalan, omborchi narxi) — har doim serverda tekshiriladi.
- *
- * <pre>
- *               katalog            ombor     buyurtmalar         pul qaytarish  analitika    xodimlar
- * ADMIN         tahrir             tahrir    hammasi             ha             ha           ha
- * OPERATOR      ko'radi            yo'q      ishlaydi            yo'q           yo'q         yo'q
- * WAREHOUSE     mavjudini tahrir*  tahrir    yo'q                yo'q           ombor        yo'q
- * OWNER         ko'radi            ko'radi   ko'radi             yo'q           ha           yo'q
- * * yaratish/o'chirish yo'q; narx — faqat epay.security.warehouse-can-edit-price=true bo'lsa (ProductService).
- * </pre>
- */
 @Configuration
 public class SecurityConfig {
     private static final String ADMIN = StaffRole.ADMIN.name();
@@ -44,12 +31,10 @@ public class SecurityConfig {
     private static final String WAREHOUSE = StaffRole.WAREHOUSE.name();
     private static final String OWNER = StaffRole.OWNER.name();
 
-    /** Inline skript yo'q (barcha JS — alohida fayllarda), CDN yo'q: hammasi o'z domenimizdan. */
     public static final String CSP = "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; "
             + "font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; "
             + "frame-ancestors 'none'";
 
-    /** Payme/Click serverlari CSRF token yubora olmaydi — ular so'rovni o'z imzosi bilan himoyalaydi. */
     static final String[] PAYMENT_CALLBACKS = {"/api/payments/payme", "/api/payments/click/**"};
 
     @Bean
@@ -58,10 +43,8 @@ public class SecurityConfig {
                                             EpayProperties props) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        // --- ochiq ---
                         .requestMatchers(HttpMethod.GET, "/api/categories", "/api/brands", "/api/products",
                                 "/api/products/*", "/api/regions").permitAll()
-                        // xaridor: buyurtma berish va number + telefon bilan kuzatish (1.4)
                         .requestMatchers(HttpMethod.POST, "/api/orders", "/api/orders/track").permitAll()
                         .requestMatchers(HttpMethod.POST, PAYMENT_CALLBACKS).permitAll()
                         .requestMatchers("/actuator/health", "/actuator/health/**", "/error").permitAll()
@@ -69,49 +52,37 @@ public class SecurityConfig {
                                 "/css/**", "/js/**", "/images/**", "/uploads/**", "/favicon.ico",
                                 "/robots.txt").permitAll()
 
-                        // --- har qanday kirgan xodim ---
                         .requestMatchers("/api/auth/**").authenticated()
 
-                        // --- xodimlar va sozlamalar ---
                         .requestMatchers("/api/admin/staff/**", "/api/admin/settings/**").hasRole(ADMIN)
 
-                        // --- analitika (faqat o'qish) ---
                         .requestMatchers(HttpMethod.GET, "/api/admin/reports/stock/**").hasAnyRole(ADMIN, OWNER, WAREHOUSE)
                         .requestMatchers(HttpMethod.GET, "/api/admin/reports/**").hasAnyRole(ADMIN, OWNER)
 
-                        // --- buyurtmalar ---
-                        // REFUNDED belgisi (pul qaytarildi) — faqat admin
                         .requestMatchers("/api/admin/orders/*/refunded").hasRole(ADMIN)
                         .requestMatchers(HttpMethod.GET, "/api/admin/orders", "/api/admin/orders/**")
                         .hasAnyRole(ADMIN, OPERATOR, OWNER)
                         .requestMatchers("/api/admin/orders", "/api/admin/orders/**").hasAnyRole(ADMIN, OPERATOR)
 
-                        // --- ombor ---
                         .requestMatchers(HttpMethod.GET, "/api/admin/stock", "/api/admin/stock/**")
                         .hasAnyRole(ADMIN, WAREHOUSE, OWNER)
                         .requestMatchers("/api/admin/stock", "/api/admin/stock/**").hasAnyRole(ADMIN, WAREHOUSE)
 
-                        // --- katalog ---
                         .requestMatchers(HttpMethod.GET, "/api/admin/products", "/api/admin/products/**",
                                 "/api/admin/categories/**", "/api/admin/brands/**")
                         .hasAnyRole(ADMIN, OPERATOR, WAREHOUSE, OWNER)
-                        // omborchi: mavjud mahsulotni tahrirlash va rasmlari (yaratish/o'chirish — faqat admin)
                         .requestMatchers(HttpMethod.PUT, "/api/admin/products/*").hasAnyRole(ADMIN, WAREHOUSE)
                         .requestMatchers("/api/admin/products/*/images", "/api/admin/products/*/images/**")
                         .hasAnyRole(ADMIN, WAREHOUSE)
 
-                        // --- qolgan admin API (mahsulot yaratish/o'chirish, kategoriya va brend) ---
                         .requestMatchers("/api/admin/**").hasRole(ADMIN)
 
-                        // panel sahifalari va boshqa hamma narsa — kirgan xodimga
                         .anyRequest().authenticated())
 
                 .formLogin(form -> form
                         .loginPage(SecurityResponses.LOGIN_PAGE)
                         .loginProcessingUrl("/login")
                         .successHandler((req, res, auth) -> {
-                            // login nomi bo'yicha hisoblagich nolga; IP niki — YO'Q (bitta haqiqiy akkaunt bilan
-                            // kirib-chiqib, boshqa akkauntlarni terishni davom ettirib bo'lmasin)
                             limiter.reset(RateLimiter.Limit.LOGIN_USER, StaffService.normalize(auth.getName()));
                             staff.recordLogin(auth.getName());
                             if (responses.wantsJson(req)) {
@@ -135,16 +106,13 @@ public class SecurityConfig {
                         }))
 
                 .sessionManagement(session -> session
-                        // login'dan keyin yangi sessiya ID (session fixation'ga qarshi)
                         .sessionFixation(fixation -> fixation.changeSessionId())
-                        // cheklovsiz, lekin har sessiya SessionRegistry da — bloklash/parol almashtirishda yopiladi
                         .maximumSessions(-1)
                         .sessionRegistry(sessionRegistry)
                         .expiredSessionStrategy(event -> responses.deny(event.getRequest(), event.getResponse(),
                                 HttpStatus.UNAUTHORIZED, "Sessiya yopildi. Qayta kiring.", "expired")))
                 .addFilterBefore(new StaffStatusFilter(staff, responses), AuthorizationFilter.class)
 
-                // CSRF yoqiq: XSRF-TOKEN cookie, frontend uni X-XSRF-TOKEN sarlavhasida qaytaradi
                 .csrf(csrf -> csrf
                         .spa()
                         .ignoringRequestMatchers(PAYMENT_CALLBACKS))
@@ -155,7 +123,6 @@ public class SecurityConfig {
                         .contentSecurityPolicy(csp -> csp.policyDirectives(CSP))
                         .referrerPolicy(r -> r.policy(ReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN))
                         .frameOptions(frame -> frame.deny())
-                        // faqat HTTPS so'rovlarda yuboriladi (prod: forward-headers orqali proksidan)
                         .httpStrictTransportSecurity(hsts -> hsts
                                 .maxAgeInSeconds(Duration.ofDays(365).toSeconds())
                                 .includeSubDomains(true)))
@@ -171,7 +138,6 @@ public class SecurityConfig {
         return http.build();
     }
 
-    /** Xato urinish IP va login nomi bo'yicha sanaladi; limitga yetsa — "locked", aks holda umumiy xabar. */
     private static void loginFailed(HttpServletRequest req, HttpServletResponse res, RateLimiter limiter,
                                     SecurityResponses responses) throws IOException {
         String ip = req.getRemoteAddr();
@@ -184,12 +150,10 @@ public class SecurityConfig {
         if (!wait.isZero()) {
             responses.locked(req, res, wait);
         } else {
-            // bloklangan/yo'q login ham xuddi shu xabarni oladi — akkaunt borligi oshkor bo'lmasin
             responses.deny(req, res, HttpStatus.UNAUTHORIZED, "Login yoki parol noto'g'ri", "error");
         }
     }
 
-    /** Faqat epay.cors.allowed-origin (bitta domen); bo'sh bo'lsa — CORS yo'q. "*" — ishga tushmaydi. */
     static CorsConfigurationSource corsSource(EpayProperties props) {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         String origin = props.cors().allowedOrigin();

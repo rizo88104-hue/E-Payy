@@ -11,7 +11,6 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 
-/** Xodim uchun to'liq buyurtma: mijoz, qatorlar (fiskal nusxa bilan), kurs, operator va izoh. */
 public record OrderDetails(Long id, String number, String customerName, String phone, String address, Region region,
                            OrderStatus status, PaymentStatus payStatus, PaymentMethod paymentMethod,
                            List<Line> items, BigDecimal totalUsd, BigDecimal usdRate, long amountUzs,

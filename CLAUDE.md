@@ -78,5 +78,6 @@ Namuna: `D:\test\E-payy` (Spring Boot 3.3.5, Java 17, paket `uz.pcstore`) — fa
 - Paket `uz.pcstore` -> `uz.epay`, yuqoridagi qoidalarga moslab.
 
 ## Ish tartibi
+- Kodga izoh yozilmaydi.
 - Har bir o'zgarish test bilan birga keladi; `./mvnw test` o'tishi shart.
 - Commit va push'ni foydalanuvchi o'zi qiladi (yoki aniq ruxsat berilganda).

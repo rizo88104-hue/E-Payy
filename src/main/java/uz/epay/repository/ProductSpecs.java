@@ -9,17 +9,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-/**
- * Katalog filtrlari. Criteria API bilan: JPQL dagi "(:q is null or ...)" PostgreSQL'da
- * "could not determine data type of parameter" xatosini beradi.
- */
 public final class ProductSpecs {
     private static final char ESCAPE = '\\';
 
     private ProductSpecs() {
     }
 
-    /** Har bir parametr null bo'lsa — shu filtr qo'llanmaydi. q — nom yoki SKU ichida, harf katta-kichikligisiz. */
     public static Specification<Product> filter(String q, Long categoryId, Long brandId, ProductStatus status) {
         return (root, query, cb) -> {
             List<Predicate> where = new ArrayList<>();
@@ -42,7 +37,6 @@ public final class ProductSpecs {
         };
     }
 
-    /** Foydalanuvchi kiritgan % va _ maxsus belgi bo'lib qolmasin. */
     static String escapeLike(String s) {
         String e = String.valueOf(ESCAPE);
         return s.replace(e, e + e).replace("%", e + "%").replace("_", e + "_");

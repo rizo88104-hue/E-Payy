@@ -9,7 +9,6 @@ import uz.epay.entity.Region;
 import java.math.BigDecimal;
 import java.time.Instant;
 
-/** Xodimlar ro'yxatidagi qator. */
 public record OrderSummary(Long id, String number, String customerName, String phone, Region region,
                            OrderStatus status, PaymentStatus payStatus, PaymentMethod paymentMethod,
                            BigDecimal totalUsd, long amountUzs, Long operatorId, String operatorName,

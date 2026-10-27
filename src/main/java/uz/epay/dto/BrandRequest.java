@@ -6,7 +6,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
-/** Admin: brend yaratish/tahrirlash. */
 public record BrandRequest(
         @NotBlank @Size(max = 100) String name,
         @NotBlank @Size(max = 64)

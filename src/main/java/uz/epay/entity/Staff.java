@@ -25,7 +25,6 @@ public class Staff {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    /** Kichik harflarda. */
     @Column(nullable = false, unique = true, length = 64)
     private String username;
 

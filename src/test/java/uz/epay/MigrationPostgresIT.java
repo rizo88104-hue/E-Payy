@@ -21,11 +21,6 @@ import java.math.BigDecimal;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-/**
- * Haqiqiy PostgreSQL 17 da: barcha migratsiyalar bo'sh bazaga qo'llanadi va Hibernate sxemani tasdiqlaydi
- * (ddl-auto: validate — kontekst yuklansa, entity va jadvallar mos).
- * Docker bo'lmasa o'tkazib yuboriladi (lokal kompyuter); GitHub Actions runner'ida Docker bor — u yerda ishlaydi.
- */
 @SpringBootTest
 @ActiveProfiles("test")
 @Testcontainers(disabledWithoutDocker = true)
@@ -51,7 +46,6 @@ class MigrationPostgresIT {
         assertThat(flyway.info().pending()).isEmpty();
         assertThat(flyway.info().applied()).extracting(m -> m.getVersion().getVersion()).containsExactly("1", "2", "3", "4");
         assertThat(jdbc.queryForObject("select version()", String.class)).contains("PostgreSQL 17");
-        // demo ma'lumotlar (db/dev-data) bu yerga tushmagan
         assertThat(jdbc.queryForObject("select count(*) from products", Integer.class)).isZero();
     }
 
@@ -65,7 +59,6 @@ class MigrationPostgresIT {
                 .isEqualTo("14,2");
     }
 
-    /** Buyurtma raqami ketma-ketligi PostgreSQL da ishlaydi va o'sib boradi. */
     @Test
     void orderNumberSequence() {
         long first = orders.nextNumber();

@@ -10,10 +10,6 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 
-/**
- * Xaridorga ko'rsatiladigan buyurtma ("Buyurtmam"). Ism, manzil, operator va izohlar ataylab yo'q;
- * telefon yashirilgan — raqamni bilgan begona odam shaxsiy ma'lumotni ko'ra olmasin.
- */
 public record OrderTrackResponse(String number, OrderStatus status, PaymentStatus payStatus,
                                  PaymentMethod paymentMethod, List<Line> items, BigDecimal totalUsd, long amountUzs,
                                  String phoneMasked, Instant createdAt) {

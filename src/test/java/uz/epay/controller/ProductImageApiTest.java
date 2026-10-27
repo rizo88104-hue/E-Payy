@@ -99,7 +99,6 @@ class ProductImageApiTest extends ApiTestBase {
                 .andExpect(jsonPath("$.images[0].url").value(matchesPattern(UUID_WEBP)));
     }
 
-    /** Tur fayl ichidan aniqlanadi: nomi .png, Content-Type image/png bo'lsa ham, ichi .exe — rad etiladi. */
     @Test
     void exeIsRejected() throws Exception {
         byte[] exe = new byte[1024];
@@ -139,7 +138,6 @@ class ProductImageApiTest extends ApiTestBase {
                 .andExpect(header().string("Cache-Control", containsString("immutable")));
     }
 
-    /** Papkaga begona fayl tushib qolsa ham (masalan .html) u berilmaydi. */
     @Test
     void onlyUuidWebpNamesAreServed() throws Exception {
         Files.createDirectories(storage.dir());
@@ -165,7 +163,6 @@ class ProductImageApiTest extends ApiTestBase {
                 .andExpect(jsonPath("$.images[0].sortOrder").value(0))
                 .andExpect(jsonPath("$.images[1].id").value(first));
 
-        // ro'yxat to'liq bo'lmasa — 400
         mvc.perform(put("/api/admin/products/{id}/images/order", product.getId()).with(csrf())
                         .contentType(MediaType.APPLICATION_JSON).content("{\"ids\":[" + first + "]}"))
                 .andExpect(status().isBadRequest());
@@ -175,7 +172,6 @@ class ProductImageApiTest extends ApiTestBase {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.images", hasSize(1)))
                 .andExpect(jsonPath("$.images[0].id").value(second));
-        // fayl commit dan keyin o'chiriladi
         assertThat(fileOf(firstUrl)).doesNotExist();
     }
 

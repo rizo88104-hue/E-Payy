@@ -42,14 +42,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-/**
- * Buyurtmalar: xaridor yaratadi va kuzatadi; xodimlar ishlaydi.
- * Narx, kafolat, kurs va so'mdagi summa — faqat shu yerda (serverda) hisoblanadi va buyurtmada qotiriladi.
- * Holat o'tishlari — OrderTransitions.
- */
 @Service
 public class OrderService {
-    /** "Kunlik" hisoblar va buyurtma raqamidagi yil — Toshkent vaqti bo'yicha. */
     public static final ZoneId TASHKENT = ZoneId.of("Asia/Tashkent");
     static final int MAX_LINES = 20;
     static final int MAX_QTY = 10;
@@ -74,8 +68,6 @@ public class OrderService {
         this.events = events;
         this.props = props;
     }
-
-    // --- xaridor ---
 
     @Transactional
     public OrderPlacedResponse create(OrderRequest req, String clientIp) {
@@ -117,7 +109,6 @@ public class OrderService {
             total = total.add(item.lineTotalUsd());
         }
 
-        // pul buyurtma paytida qotiriladi: kurs va so'mdagi summa keyin o'zgarmaydi
         order.setTotalUsd(total);
         order.setUsdRate(rate);
         order.setAmountUzs(Money.toUzs(total, rate));
@@ -127,7 +118,6 @@ public class OrderService {
         order.setExpiresAt(now.plus(props.order().unpaidTimeout()));
         order.setNumber(String.format("EP-%d-%06d", LocalDate.ofInstant(now, TASHKENT).getYear(), orders.nextNumber()));
 
-        // TODO(2.1): StockService haqiqiy realizatsiyasi — qoldiq yetmasa shu yerda BadRequest va tranzaksiya bekor
         stock.reserve(order);
 
         Order saved = orders.save(order);
@@ -135,7 +125,6 @@ public class OrderService {
         return OrderPlacedResponse.from(saved);
     }
 
-    /** Raqam va telefon mos kelsa. Aks holda (yo'q, telefon boshqa, format xato) — har doim bir xil 404. */
     @Transactional(readOnly = true)
     public OrderTrackResponse track(String number, String phone, String clientIp) {
         limiter.check(RateLimiter.Limit.TRACK, clientIp);
@@ -146,7 +135,6 @@ public class OrderService {
                 .orElseThrow(() -> new NotFoundException(NOT_FOUND));
     }
 
-    /** Bir xil mahsulot qatorlari birlashtiriladi (kafolat — birinchisidan), keyin miqdor cheklovlari. */
     static List<OrderRequest.Item> mergeLines(List<OrderRequest.Item> items) {
         Map<Long, OrderRequest.Item> merged = new LinkedHashMap<>();
         for (OrderRequest.Item i : items) {
@@ -164,14 +152,10 @@ public class OrderService {
         return List.copyOf(merged.values());
     }
 
-    // --- narx ---
-
-    /** Eng qisqa kafolat muddati — narx ichida; muddat tanlanmasa shu olinadi. */
     int baseWarranty() {
         return props.order().warranty().keySet().iterator().next();
     }
 
-    /** Narx + tanlangan kafolat muddati foizi, sentgacha HALF_UP. */
     BigDecimal priceWithWarranty(BigDecimal price, int years) {
         Integer percent = props.order().warranty().get(years);
         if (percent == null) {
@@ -189,15 +173,11 @@ public class OrderService {
         return rate;
     }
 
-    // --- xodimlar ---
-
-    /** Operator faqat biriktirilmagan va o'zinikilarni ko'radi; ADMIN va OWNER — hammasini. */
     @Transactional(readOnly = true)
     public PageResponse<OrderSummary> list(OrderStatus status, PaymentStatus payStatus, LocalDate from, LocalDate to,
                                            String q, int page, int size) {
         Long visibleTo = isOperatorOnly() ? me().getId() : null;
         Instant fromInstant = from == null ? null : from.atStartOfDay(TASHKENT).toInstant();
-        // "to" kuni ham kiradi: keyingi kun boshigacha
         Instant toInstant = to == null ? null : to.plusDays(1).atStartOfDay(TASHKENT).toInstant();
         return PageResponse.of(orders.findAll(OrderSpecs.filter(status, payStatus, fromInstant, toInstant, q, visibleTo),
                 PageRequest.of(page, size, NEWEST_FIRST)), OrderSummary::from);
@@ -210,7 +190,6 @@ public class OrderService {
         return OrderDetails.from(o);
     }
 
-    /** Operator biriktirilmagan buyurtmani o'ziga oladi. */
     @Transactional
     public OrderDetails take(Long id) {
         Order o = load(id);
@@ -223,7 +202,6 @@ public class OrderService {
         return flush(o);
     }
 
-    /** Faqat ADMIN: istalgan faol operatorga biriktiradi (yoki qayta biriktiradi). */
     @Transactional
     public OrderDetails assign(Long id, Long operatorId) {
         if (!CurrentUser.hasRole(StaffRole.ADMIN)) {
@@ -252,7 +230,6 @@ public class OrderService {
         switch (to) {
             case CONFIRMED -> events.publishEvent(OrderEvent.of(OrderEvent.Type.CONFIRMED, o));
             case CANCELLED -> {
-                // to'langan buyurtma bekor qilinsa — pul qaytarilishi kerak (admin keyin REFUNDED qiladi)
                 if (o.getPayStatus() == PaymentStatus.PAID) {
                     movePayment(o, PaymentStatus.REFUND_PENDING);
                 }
@@ -273,7 +250,6 @@ public class OrderService {
         return flush(o);
     }
 
-    /** Pul qaytarildi (REFUND_PENDING → REFUNDED). Faqat ADMIN — SecurityConfig. */
     @Transactional
     public OrderDetails markRefunded(Long id) {
         Order o = load(id);
@@ -281,10 +257,6 @@ public class OrderService {
         return flush(o);
     }
 
-    /**
-     * To'lov qabul qilindi (Payme/Click callback'lari chaqiradi — keyingi bosqich). Bekor qilingan buyurtma
-     * to'lanmaydi; takroriy chaqiruv (allaqachon PAID) — hech narsa qilmaydi.
-     */
     @Transactional
     public void markPaid(Long id) {
         Order o = load(id);
@@ -300,8 +272,6 @@ public class OrderService {
         orders.flush();
     }
 
-    // --- yordamchilar ---
-
     private static void movePayment(Order o, PaymentStatus to) {
         if (!OrderTransitions.canMove(o.getPayStatus(), to)) {
             throw new BadRequestException("To'lov holatini o'zgartirib bo'lmaydi: " + o.getPayStatus() + " → " + to);
@@ -309,7 +279,6 @@ public class OrderService {
         o.setPayStatus(to);
     }
 
-    /** Operator boshqa operatorning buyurtmasini ko'rmaydi va o'zgartirmaydi. */
     private void requireVisible(Order o) {
         if (isOperatorOnly() && o.getAssignedOperator() != null
                 && !Objects.equals(o.getAssignedOperator().getId(), me().getId())) {
@@ -317,7 +286,6 @@ public class OrderService {
         }
     }
 
-    /** Operator biriktirilmagan buyurtma bilan ishlasa — u avtomatik unga biriktiriladi. */
     private void claimIfOperator(Order o) {
         requireVisible(o);
         if (isOperatorOnly() && o.getAssignedOperator() == null) {
@@ -338,7 +306,6 @@ public class OrderService {
         return orders.findWithDetailsById(id).orElseThrow(() -> new NotFoundException(NOT_FOUND + ": " + id));
     }
 
-    /** flush — yangi version javobga tushishi uchun. */
     private OrderDetails flush(Order o) {
         return OrderDetails.from(orders.saveAndFlush(o));
     }

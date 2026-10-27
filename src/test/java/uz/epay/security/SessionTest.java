@@ -18,7 +18,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-/** Haqiqiy login sessiyalari: bloklash va parol almashtirish ochiq sessiyalarni yopadi. */
 class SessionTest extends ApiTestBase {
     private static final String PASSWORD = "session-pass-1";
     private static final String ADMIN_PASSWORD = "session-admin-1";
@@ -57,11 +56,9 @@ class SessionTest extends ApiTestBase {
         mvc.perform(get("/api/admin/products").session(opSession))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.reason").value("expired"));
-        // admin o'z sessiyasida ishlayveradi
         mvc.perform(get("/api/admin/staff").session(adminSession)).andExpect(status().isOk());
     }
 
-    /** SessionRegistry chetlab o'tilsa ham (to'g'ridan-to'g'ri bazada bloklangan) — keyingi so'rovda chiqariladi. */
     @Test
     void blockedInDatabaseIsAlsoClosed() throws Exception {
         MockHttpSession opSession = login(operator, PASSWORD);
@@ -74,7 +71,6 @@ class SessionTest extends ApiTestBase {
         mvc.perform(get("/api/admin/products").session(opSession)).andExpect(status().isUnauthorized());
     }
 
-    /** O'z parolini almashtirsa: boshqa qurilmadagi sessiya yopiladi, joriysi qoladi. */
     @Test
     void ownPasswordChangeClosesOtherSessions() throws Exception {
         MockHttpSession phone = login(operator, PASSWORD);
@@ -98,7 +94,6 @@ class SessionTest extends ApiTestBase {
                 .andExpect(jsonPath("$.detail").value("Joriy parol noto'g'ri"));
     }
 
-    /** Admin parolni almashtirsa — xodimning barcha sessiyalari yopiladi. */
     @Test
     void adminPasswordResetClosesStaffSessions() throws Exception {
         MockHttpSession opSession = login(operator, PASSWORD);

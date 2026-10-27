@@ -36,7 +36,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-/** Faqat xato javoblarining shakli tekshiriladi, shuning uchun security filtrlari o'chirilgan. */
 @WebMvcTest(controllers = GlobalExceptionHandlerTest.TestController.class)
 @AutoConfigureMockMvc(addFilters = false)
 @Import(GlobalExceptionHandlerTest.TestController.class)
@@ -116,7 +115,7 @@ class GlobalExceptionHandlerTest {
     void tooManyRequestsHasRetryAfter() throws Exception {
         mvc.perform(get("/test/throw").param("kind", "limit"))
                 .andExpect(status().isTooManyRequests())
-                .andExpect(header().string("Retry-After", "2"))   // 1.5 s -> yuqoriga 2
+                .andExpect(header().string("Retry-After", "2"))
                 .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON));
     }
 
@@ -146,7 +145,6 @@ class GlobalExceptionHandlerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON));
     }
 
-    /** AccessDenied 500 ga aylanmaydi — Spring Security'ga qaytariladi (u 403 beradi). */
     @Test
     void accessDeniedIsNotTurnedInto500() {
         assertThatThrownBy(() -> mvc.perform(get("/test/throw").param("kind", "denied")))

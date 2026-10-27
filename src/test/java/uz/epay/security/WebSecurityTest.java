@@ -18,11 +18,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-/** CSRF, CORS, xavfsizlik sarlavhalari va rad javoblari (API — JSON, sahifa — login'ga). */
 class WebSecurityTest extends ApiTestBase {
     private static final String ALLOWED = "https://shop.epay.test";
-
-    // --- CSRF ---
 
     @Test
     @WithMockUser(roles = "ADMIN")
@@ -33,7 +30,6 @@ class WebSecurityTest extends ApiTestBase {
                 .andExpect(jsonPath("$.detail").value("CSRF token yo'q yoki eskirgan. Sahifani yangilang."));
     }
 
-    /** Payme/Click CSRF token yubora olmaydi — ular uchun CSRF o'chiq (o'z imzosi bor). */
     @Test
     void paymentCallbacksPassWithoutCsrf() throws Exception {
         for (String path : new String[]{"/api/payments/payme", "/api/payments/click/prepare",
@@ -43,8 +39,6 @@ class WebSecurityTest extends ApiTestBase {
             assertThat(status).as(path).isNotIn(401, 403);
         }
     }
-
-    // --- rad javoblari ---
 
     @Test
     void apiWithoutLoginIs401Json() throws Exception {
@@ -70,8 +64,6 @@ class WebSecurityTest extends ApiTestBase {
                 .andExpect(redirectedUrl("/login.html?login"));
     }
 
-    // --- CORS ---
-
     @Test
     void corsForeignOriginIsRejected() throws Exception {
         mvc.perform(options("/api/products")
@@ -94,8 +86,6 @@ class WebSecurityTest extends ApiTestBase {
                 .andExpect(header().string(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS, "true"));
     }
 
-    // --- sarlavhalar ---
-
     @Test
     void securityHeaders() throws Exception {
         mvc.perform(get("/api/products"))
@@ -103,7 +93,6 @@ class WebSecurityTest extends ApiTestBase {
                 .andExpect(header().string("Referrer-Policy", "strict-origin-when-cross-origin"))
                 .andExpect(header().string("X-Content-Type-Options", "nosniff"))
                 .andExpect(header().string("X-Frame-Options", "DENY"))
-                // HSTS faqat HTTPS so'rovda
                 .andExpect(header().doesNotExist("Strict-Transport-Security"));
         mvc.perform(get("/api/products").secure(true))
                 .andExpect(header().string("Strict-Transport-Security", "max-age=31536000 ; includeSubDomains"));

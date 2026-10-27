@@ -24,7 +24,6 @@ class RateLimiterTest {
     @BeforeEach
     void setUp() {
         clock = new MutableClock();
-        // null -> standart limitlar: ORDER 5/10m, TRACK 10/1m, LOGIN 10/15m
         limiter = new RateLimiter(new RateLimitProperties(null, null, null, null), clock);
     }
 
@@ -128,7 +127,6 @@ class RateLimiterTest {
         assertThat(limiter.hit(Limit.LOGIN_USER, "ali")).isEqualTo(1);
     }
 
-    /** Qo'lda suriladigan soat. */
     static final class MutableClock extends Clock {
         private Instant now = Instant.parse("2026-01-01T00:00:00Z");
 

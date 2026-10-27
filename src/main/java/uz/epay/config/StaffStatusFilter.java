@@ -14,11 +14,6 @@ import uz.epay.service.StaffService;
 
 import java.io.IOException;
 
-/**
- * Har so'rovda: kirgan xodim bazada bloklangan bo'lsa — sessiya shu yerning o'zida bekor qilinadi.
- * SessionRegistry (bloklash paytida expireNow) bilan birga ikkinchi himoya: registry yo'qolsa ham
- * (qayta ishga tushirish, boshqa nusxa) bloklangan xodim ishlay olmaydi. Bean emas — faqat Security zanjirida.
- */
 class StaffStatusFilter extends OncePerRequestFilter {
     private final StaffService staff;
     private final SecurityResponses responses;

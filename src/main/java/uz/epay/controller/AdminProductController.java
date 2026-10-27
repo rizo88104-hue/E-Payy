@@ -26,7 +26,6 @@ import uz.epay.dto.ProductRequest;
 import uz.epay.entity.ProductStatus;
 import uz.epay.service.ProductService;
 
-/** Admin: mahsulotlar (barcha statuslar) va ularning rasmlari. */
 @RestController
 @RequestMapping("/api/admin/products")
 public class AdminProductController {
@@ -62,7 +61,6 @@ public class AdminProductController {
         return products.update(id, req);
     }
 
-    /** Buyurtmalarda ishlatilgan bo'lsa o'chirilmaydi, ARCHIVED qilinadi — javobda qaysi biri bo'lgani. */
     @DeleteMapping("/{id}")
     public DeleteResult delete(@PathVariable Long id) {
         return products.delete(id);

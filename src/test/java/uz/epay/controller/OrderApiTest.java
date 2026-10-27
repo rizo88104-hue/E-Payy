@@ -32,7 +32,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-/** Xaridor: buyurtma berish va kuzatish (login yo'q). Test kursi: 12650.00 (application-test.yml). */
 @RecordApplicationEvents
 class OrderApiTest extends ApiTestBase {
     @Autowired
@@ -73,9 +72,6 @@ class OrderApiTest extends ApiTestBase {
                 .contentType(MediaType.APPLICATION_JSON).content(toJson(body)));
     }
 
-    // --- yaratish va pul ---
-
-    /** 1299.99 $ × 12650.00 = 16 444 873.5 so'm → HALF_UP → 16 444 874; kurs va summa buyurtmada qotiriladi. */
     @Test
     void createFreezesPriceRateAndAmount() throws Exception {
         order(body(List.of(item(laptop, 1))))
@@ -87,7 +83,6 @@ class OrderApiTest extends ApiTestBase {
                 .andExpect(jsonPath("$.totalUsd").value(1299.99))
                 .andExpect(jsonPath("$.amountUzs").value(16_444_874))
                 .andExpect(jsonPath("$.expiresAt").exists())
-                // xaridorga ichki id va xodim/mijoz maydonlari qaytmaydi
                 .andExpect(jsonPath("$.id").doesNotExist())
                 .andExpect(jsonPath("$.customerName").doesNotExist())
                 .andExpect(jsonPath("$.operatorNote").doesNotExist());
@@ -97,7 +92,6 @@ class OrderApiTest extends ApiTestBase {
         assertThat(saved.getPhone()).isEqualTo("+998901234567");
         assertThat(saved.getExpiresAt()).isAfter(saved.getCreatedAt());
 
-        // mahsulot narxi keyin o'zgarsa ham buyurtma o'zgarmaydi
         laptop.setPrice(new BigDecimal("1.00"));
         productRepository.save(laptop);
         Order again = orderRepository.findWithDetailsById(saved.getId()).orElseThrow();
@@ -123,7 +117,6 @@ class OrderApiTest extends ApiTestBase {
         assertThat(nb).isEqualTo(na + 1);
     }
 
-    /** Kafolat foizi serverda: 99.95 × 1.10 = 109.945 → 109.95 (HALF_UP); 99.95 × 1.20 = 119.94. */
     @Test
     void warrantySurchargeIsRoundedHalfUp() throws Exception {
         Product p = product("RAM-1", "RAM", category, null, ProductStatus.PUBLISHED);
@@ -135,7 +128,6 @@ class OrderApiTest extends ApiTestBase {
 
         order(body(List.of(item(p, 2, 3), item(q, 1, 5))))
                 .andExpect(status().isCreated())
-                // 2 × 109.95 + 119.94 = 339.84 $; × 12650 = 4 298 976 so'm
                 .andExpect(jsonPath("$.totalUsd").value(339.84))
                 .andExpect(jsonPath("$.amountUzs").value(4_298_976));
     }
@@ -147,7 +139,6 @@ class OrderApiTest extends ApiTestBase {
                 .andExpect(jsonPath("$.detail").value("Kafolat muddati noto'g'ri: 2 yil. Mavjud: [1, 3, 5] yil"));
     }
 
-    /** Takroriy qatorlar birlashtiriladi; birlashgandan keyin ham bitta mahsulotdan 10 tagacha. */
     @Test
     void duplicateLinesAreMerged() throws Exception {
         order(body(List.of(item(laptop, 4), item(laptop, 5)))).andExpect(status().isCreated());
@@ -207,7 +198,6 @@ class OrderApiTest extends ApiTestBase {
         assertThat(orderRepository.count()).isZero();
     }
 
-    /** Shu telefondan to'lanmagan NEW buyurtma 3 ta bo'lsa — 4-chisi 409. */
     @Test
     void tooManyPendingOrdersPerPhoneIs409() throws Exception {
         for (int i = 0; i < 3; i++) {
@@ -216,11 +206,9 @@ class OrderApiTest extends ApiTestBase {
         order(new java.util.HashMap<>(Map.of("customerName", "Ali", "phone", "935554433",
                 "address", "Toshkent 1-uy", "region", "ANDIJON", "items", List.of(item(laptop, 1)))))
                 .andExpect(status().isConflict());
-        // boshqa telefon — bemalol
         placeOrder(laptop, 1, "+998 93 555 44 34");
     }
 
-    /** ORDER limiti: bitta IP dan 10 daqiqada 5 ta — 6-chisi 429 (telefonlar har xil). */
     @Test
     void sixthOrderFromSameIpIs429() throws Exception {
         String ip = freshIp();
@@ -235,8 +223,6 @@ class OrderApiTest extends ApiTestBase {
                 .andExpect(status().isTooManyRequests())
                 .andExpect(header().exists("Retry-After"));
     }
-
-    // --- kuzatish ---
 
     private ResultActions track(String number, String phone) throws Exception {
         return mvc.perform(post("/api/orders/track").with(csrf()).with(fromIp(freshIp()))
@@ -254,15 +240,12 @@ class OrderApiTest extends ApiTestBase {
                 .andExpect(jsonPath("$.phoneMasked").value("+998 90 *** ** 67"))
                 .andExpect(jsonPath("$.items", hasSize(1)))
                 .andExpect(jsonPath("$.items[0].lineTotalUsd").value(2599.98))
-                // shaxsiy ma'lumot yo'q
                 .andExpect(jsonPath("$.customerName").doesNotExist())
                 .andExpect(jsonPath("$.address").doesNotExist())
                 .andExpect(jsonPath("$.phone").doesNotExist());
-        // raqam kichik harf bilan kiritilsa ham
         track(number.toLowerCase(), "+998901234567").andExpect(status().isOk());
     }
 
-    /** Noto'g'ri telefon, yo'q raqam, noto'g'ri format — javob (tana bilan) bir xil: hech narsa oshkor bo'lmaydi. */
     @Test
     void trackMismatchIsAlwaysSame404() throws Exception {
         String number = placeOrder(laptop, 1, "+998901234567");
@@ -274,8 +257,6 @@ class OrderApiTest extends ApiTestBase {
                 .andReturn().getResponse().getContentAsString();
         assertThat(wrongPhone).isEqualTo(noOrder).isEqualTo(badFormat).contains("Buyurtma topilmadi");
     }
-
-    // --- boshqalar ---
 
     @Test
     void staffEndpointsNeedLogin() throws Exception {
@@ -297,7 +278,6 @@ class OrderApiTest extends ApiTestBase {
                 .andExpect(jsonPath("$[0].en").value("Tashkent city"));
     }
 
-    /** 1.2 dan qolgan test: buyurtmada ishlatilgan mahsulot o'chirilmaydi — ARCHIVED bo'ladi. */
     @Test
     @WithMockUser(roles = "ADMIN")
     void productUsedInOrderIsArchivedNotDeleted() throws Exception {
@@ -307,11 +287,9 @@ class OrderApiTest extends ApiTestBase {
                 .andExpect(jsonPath("$.outcome").value("ARCHIVED"));
         assertThat(productRepository.findById(laptop.getId()).orElseThrow().getStatus())
                 .isEqualTo(ProductStatus.ARCHIVED);
-        // katalogdan yo'qoladi, buyurtma esa joyida
         mvc.perform(get("/api/products/{id}", laptop.getId())).andExpect(status().isNotFound());
         assertThat(orderRepository.count()).isEqualTo(1);
 
-        // ishlatilmagan mahsulot — butunlay o'chadi
         Product unused = product("U-1", "Unused", category, null, ProductStatus.PUBLISHED);
         mvc.perform(delete("/api/admin/products/{id}", unused.getId()).with(csrf()))
                 .andExpect(jsonPath("$.outcome").value("DELETED"));

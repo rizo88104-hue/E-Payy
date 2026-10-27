@@ -13,13 +13,7 @@ import uz.epay.service.StaffService;
 import java.io.IOException;
 import java.time.Duration;
 
-/**
- * UsernamePasswordAuthenticationFilter'dan OLDIN: bloklangan IP yoki login nomi parolni umuman tekshirtira olmaydi
- * (to'g'ri parol bilan ham). Xato urinishlarni LoginHandlers.failure sanaydi.
- * Bean emas — faqat Security zanjirida (aks holda Boot uni servlet filtri sifatida ham ro'yxatga olardi).
- */
 class LoginRateLimitFilter extends OncePerRequestFilter {
-    /** getServletPath() emas: u servlet xaritasiga qarab bo'sh bo'lishi mumkin va blok chetlab o'tiladi. */
     static final RequestMatcher LOGIN_POST = PathPatternRequestMatcher.pathPattern(HttpMethod.POST, "/login");
 
     private final RateLimiter limiter;

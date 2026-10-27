@@ -12,7 +12,6 @@ import java.util.Optional;
 
 public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpecificationExecutor<Product> {
 
-    /** Katalog sahifasi: kategoriya va brend bitta so'rovda; rasmlar @BatchSize bilan. */
     @Override
     @EntityGraph(attributePaths = {"category", "brand"})
     Page<Product> findAll(Specification<Product> spec, Pageable pageable);

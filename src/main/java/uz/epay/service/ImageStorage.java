@@ -29,23 +29,16 @@ import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
-/**
- * Yuklangan mahsulot rasmlari: turini fayl ichidan (magic bytes) aniqlaydi, kichraytiradi, WebP qilib
- * epay.upload-dir ga UUID nomi bilan yozadi. Foydalanuvchi bergan nom, kengaytma va Content-Type ishlatilmaydi.
- */
 @Service
 public class ImageStorage {
     private static final Logger log = LoggerFactory.getLogger(ImageStorage.class);
 
     public static final long MAX_BYTES = 5L * 1024 * 1024;
     public static final String TOO_LARGE = "Fayl hajmi 5 MB dan oshmasin";
-    /** Eng uzun tomon, px. */
     static final int MAX_SIDE = 1200;
-    /** "Siqilgan bomba"ga qarshi: 5 MB PNG ham 50 000×50 000 deb e'lon qilishi mumkin. */
     static final long MAX_PIXELS = 50_000_000L;
     static final float QUALITY = 0.82f;
     public static final String URL_PREFIX = "/uploads/";
-    /** Bizning fayllarimiz: faqat shu ko'rinishdagi nomlar beriladi va o'chiriladi. */
     public static final Pattern FILE_NAME =
             Pattern.compile("[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}[.]webp");
 
@@ -55,7 +48,6 @@ public class ImageStorage {
         this.dir = resolveDir(dir);
     }
 
-    /** epay.upload-dir → mutlaq yo'l (UploadConfig ham shu bilan hisoblaydi). */
     public static Path resolveDir(String dir) {
         return Path.of(dir).toAbsolutePath().normalize();
     }
@@ -64,7 +56,6 @@ public class ImageStorage {
         return dir;
     }
 
-    /** Tekshiradi, WebP ga o'tkazib saqlaydi va "/uploads/{uuid}.webp" qaytaradi. */
     public String save(MultipartFile file) {
         if (file == null || file.isEmpty()) {
             throw new BadRequestException("Rasm fayli tanlanmagan");
@@ -82,7 +73,6 @@ public class ImageStorage {
         String name = UUID.randomUUID() + ".webp";
         try {
             Files.createDirectories(dir);
-            // avval vaqtinchalik faylga: yarim yozilgan rasm hech qachon /uploads/ da ko'rinmaydi
             Path tmp = Files.createTempFile(dir, "up-", ".tmp");
             try {
                 writeWebp(image, tmp);
@@ -96,7 +86,6 @@ public class ImageStorage {
         return URL_PREFIX + name;
     }
 
-    /** Faqat bizning "/uploads/{uuid}.webp" fayllarimiz o'chiriladi; boshqa qiymat e'tiborsiz qoldiriladi. */
     public void delete(String url) {
         if (url == null || !url.startsWith(URL_PREFIX)) {
             return;
@@ -130,7 +119,6 @@ public class ImageStorage {
     }
 
     private static BufferedImage decode(byte[] bytes, Kind kind) {
-        // WebP faqat TwelveMonkeys (sof Java) bilan o'qiladi: begona fayl native libwebp ga berilmaydi
         ImageReader reader = kind == Kind.WEBP
                 ? reader("webp", r -> r.getOriginatingProvider().getClass().getName().startsWith("com.twelvemonkeys."))
                 : reader(kind == Kind.JPEG ? "jpeg" : "png", r -> true);
@@ -138,12 +126,10 @@ public class ImageStorage {
             reader.setInput(in, true, true);
             long w = reader.getWidth(0);
             long h = reader.getHeight(0);
-            // o'lcham sarlavhadan o'qiladi — piksellar xotiraga yuklanishidan OLDIN
             if (w <= 0 || h <= 0 || w * h > MAX_PIXELS) {
                 throw new BadRequestException("Rasm o'lchami juda katta (50 megapikselgacha)");
             }
             ImageReadParam param = reader.getDefaultReadParam();
-            // juda katta rasmni o'qishdayoq siyraklashtiradi (xotira tejaladi), aniq o'lcham resize() da
             int step = (int) Math.max(1, Math.max(w, h) / (MAX_SIDE * 2L));
             param.setSourceSubsampling(step, step, 0, 0);
             return reader.read(0, param);
@@ -168,7 +154,6 @@ public class ImageStorage {
         throw new IllegalStateException("ImageIO o'quvchisi topilmadi: " + format);
     }
 
-    /** Eng uzun tomoni MAX_SIDE gacha; bosqichma-bosqich (har safar ko'pi bilan 2 marta) — sifatliroq. */
     static BufferedImage resize(BufferedImage src) {
         int type = src.getColorModel().hasAlpha() ? BufferedImage.TYPE_INT_ARGB : BufferedImage.TYPE_INT_RGB;
         int w = src.getWidth();

@@ -16,10 +16,6 @@ import java.time.Duration;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-/**
- * Security filtrlarida (controller'dan tashqarida) javob: API va JSON so'rovlarga — RFC 9457 ProblemDetail,
- * sahifalarga — login sahifasiga yo'naltirish.
- */
 @Component
 public class SecurityResponses {
     public static final String LOGIN_PAGE = "/login.html";
@@ -31,7 +27,6 @@ public class SecurityResponses {
         this.json = json;
     }
 
-    /** /api/** yoki Accept: application/json — JSON javob kutiladi (login formasi fetch bilan yuborilsa ham). */
     public boolean wantsJson(HttpServletRequest req) {
         if (API.matches(req)) {
             return true;
@@ -65,7 +60,6 @@ public class SecurityResponses {
         problem(req, res, status, detail, Map.of());
     }
 
-    /** 200 va JSON tana (masalan, muvaffaqiyatli login'dan keyin kim kirgani). */
     public void ok(HttpServletResponse res, Object body) throws IOException {
         res.setStatus(HttpStatus.OK.value());
         res.setContentType(MediaType.APPLICATION_JSON_VALUE);
@@ -73,7 +67,6 @@ public class SecurityResponses {
         json.writeValue(res.getWriter(), body);
     }
 
-    /** JSON so'rovga — ProblemDetail; sahifaga — /login.html?{reason}. */
     public void deny(HttpServletRequest req, HttpServletResponse res, HttpStatus status, String detail, String reason)
             throws IOException {
         if (wantsJson(req)) {
@@ -83,7 +76,6 @@ public class SecurityResponses {
         }
     }
 
-    /** Login bloki: 429 + Retry-After (soniya, yuqoriga yaxlitlangan). */
     public void locked(HttpServletRequest req, HttpServletResponse res, Duration retryAfter) throws IOException {
         res.setHeader(HttpHeaders.RETRY_AFTER, String.valueOf(Math.max(1, (retryAfter.toMillis() + 999) / 1000)));
         deny(req, res, HttpStatus.TOO_MANY_REQUESTS,

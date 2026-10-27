@@ -18,7 +18,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-/** Omborchi (TZ 7): mavjud mahsulotni tahrirlaydi va nashr qiladi; narx — faqat sozlama bilan; arxivlash yo'q. */
 @WithMockUser(roles = "WAREHOUSE")
 class WarehouseProductTest extends ApiTestBase {
     Product product;
@@ -48,7 +47,6 @@ class WarehouseProductTest extends ApiTestBase {
                 .andExpect(jsonPath("$.status").value("PUBLISHED"));
     }
 
-    /** 100.00 va 100 — bir xil narx (BigDecimal compareTo), o'zgarish emas. */
     @Test
     void samePriceWithDifferentScaleIsNotAChange() throws Exception {
         mvc.perform(put("/api/admin/products/{id}", product.getId()).with(csrf())
@@ -79,7 +77,6 @@ class WarehouseProductTest extends ApiTestBase {
                 .andExpect(status().isOk());
     }
 
-    /** epay.security.warehouse-can-edit-price=true — omborchi narxni ham o'zgartiradi. */
     @Nested
     @TestPropertySource(properties = "epay.security.warehouse-can-edit-price=true")
     class WhenPriceEditingAllowed {

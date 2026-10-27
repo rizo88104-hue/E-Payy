@@ -1,6 +1,5 @@
 package uz.epay.entity;
 
-/** Yetkazish hududi (majburiy). Nomlar frontend uchun 3 tilda: GET /api/regions. Keyin yetkazish narxi shunga bog'lanadi. */
 public enum Region {
     TOSHKENT_SHAHRI("Toshkent shahri", "г. Ташкент", "Tashkent city"),
     TOSHKENT_VILOYATI("Toshkent viloyati", "Ташкентская область", "Tashkent Region"),
