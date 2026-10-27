@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kompyuter yig‘ish — E-Pay</title>
+<meta name="description" data-i18n-attr="content:meta.build" content="Kompyuterni qadamma-qadam yig‘ing va shu yerning o‘zida buyurtma bering.">
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="no-tabbar" data-mouse>
+
+<svg class="sprite" width="0" height="0" aria-hidden="true" focusable="false">
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+</svg>
+
+<header class="hdr" id="hdr">
+  <div class="wrap bp-hdr">
+    <a class="logo" href="/" aria-label="E-Pay">
+      <svg viewBox="0 0 26 26" aria-hidden="true"><rect x="1.5" y="1.5" width="23" height="23" rx="6.5" fill="none" stroke="currentColor" stroke-width="2"/><rect x="8.5" y="8.5" width="9" height="9" rx="2" fill="var(--firuza)"/></svg>
+      <span class="logo-txt">E<em>-Pay</em></span>
+    </a>
+    <span class="eyebrow" data-i18n="nav.build">Kompyuter yig‘ish</span>
+    <div class="prefs" id="lang-slot"></div>
+    <a class="bp-exit" href="/" data-i18n="b.backToShop">Do‘konga qaytish</a>
+  </div>
+</header>
+
+<main class="bp">
+  <section class="wrap">
+    <p class="eyebrow" id="bp-eyebrow"></p>
+    <h1 class="bp-title" id="bp-title" data-i18n="nav.build">Kompyuter yig‘ish</h1>
+    <p class="bp-hint" id="bp-hint"></p>
+    <nav data-i18n-attr="aria-label:b.steps" aria-label="Qadamlar"><ol class="bp-steps" id="bp-steps"></ol></nav>
+  </section>
+
+  <section class="wrap bp-body">
+    <div class="bp-main" id="bp-main"></div>
+    <aside class="bp-side" id="bp-side" data-i18n-attr="aria-label:b.yourBuild" aria-label="Sizning yig‘mangiz"></aside>
+  </section>
+</main>
+
+<div class="bp-nav" id="bp-nav"></div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"><svg class="ic"><use href="#i-check"/></svg><span id="toast-text"></span></div>
+
+<button class="demo-mini press" type="button" id="theme-mini" aria-label="Mavzu: avto" title="Mavzu"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor"/></svg></button>
+
+<script src="/js/i18n.js"></script>
+<script src="/js/theme.js"></script>
+<script src="/js/motion.js"></script>
+<script src="/js/common.js"></script>
+<script src="/js/builder.js"></script>
+</body>
+</html>

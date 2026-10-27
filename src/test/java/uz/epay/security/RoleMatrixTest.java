@@ -39,6 +39,7 @@ class RoleMatrixTest extends ApiTestBase {
             new Case(HttpMethod.GET, "/api/products", EVERYONE),
             new Case(HttpMethod.GET, "/api/categories", EVERYONE),
             new Case(HttpMethod.GET, "/api/regions", EVERYONE),
+            new Case(HttpMethod.GET, "/api/storefront/config", EVERYONE),
             new Case(HttpMethod.POST, "/api/orders", EVERYONE),
             new Case(HttpMethod.POST, "/api/orders/track", EVERYONE),
 

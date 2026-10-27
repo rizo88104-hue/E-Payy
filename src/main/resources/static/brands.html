@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Brendlar — E-Pay</title>
+<meta name="description" data-i18n-attr="content:meta.brands" content="Smart Server LLC rasmiy dileri bo‘lgan brendlar: tarixi, mahsulotlari va katalogi.">
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="no-tabbar">
+
+<svg class="sprite" width="0" height="0" aria-hidden="true" focusable="false">
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+  <symbol id="i-chip" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="1.5"/><rect x="9.5" y="9.5" width="5" height="5" rx=".5"/><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6l-8-3Z"/><path d="m9 12 2 2 4-4"/></symbol>
+  <symbol id="i-ext" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></symbol>
+</svg>
+
+<header class="hdr" id="hdr">
+  <div class="wrap bp-hdr">
+    <a class="logo" href="/" aria-label="E-Pay">
+      <svg viewBox="0 0 26 26" aria-hidden="true"><rect x="1.5" y="1.5" width="23" height="23" rx="6.5" fill="none" stroke="currentColor" stroke-width="2"/><rect x="8.5" y="8.5" width="9" height="9" rx="2" fill="var(--firuza)"/></svg>
+      <span class="logo-txt">E<em>-Pay</em></span>
+    </a>
+    <span class="eyebrow" data-i18n="nav.brands">Brendlar</span>
+    <div class="prefs" id="lang-slot"></div>
+    <a class="bp-exit" href="/" data-i18n="b.backToShop">Do‘konga qaytish</a>
+  </div>
+</header>
+
+<main class="brandsview">
+  <section class="wrap">
+    <nav class="crumbs" aria-label="breadcrumb"><a href="/" data-i18n="nav.home">Asosiy</a><span>/</span><span data-i18n="nav.brands">Brendlar</span></nav>
+    <div class="about-hero">
+      <p class="about-eyebrow" data-i18n="brands.eyebrow">Smart Server LLC — rasmiy diler</p>
+      <h1 data-i18n="brands.h1">Biz ishlaydigan brendlar.</h1>
+      <p class="about-lede" data-i18n="brands.lede">Har bir mahsulot ishlab chiqaruvchidan rasmiy yo‘l bilan keladi. Brendni tanlang — uning tarixi va katalogini ko‘rasiz.</p>
+    </div>
+    <div class="cv-head"><span class="cv-count" id="bv-count"></span></div>
+    <div class="bv-letters" id="bv-letters" role="group" data-i18n-attr="aria-label:brands.byLetter" aria-label="Harf bo‘yicha"></div>
+    <div class="bcards" id="bcards" aria-live="polite"></div>
+  </section>
+</main>
+
+<footer>
+  <section class="partners" id="partners" aria-labelledby="partners-title">
+    <div class="wrap partners-row">
+      <h2 class="sr" id="partners-title" data-i18n="partners.title">Biz rasmiy diler bo'lgan brendlar</h2>
+      <div class="partners-company" id="partners-company">
+        <span class="pc-mark"><svg class="ic"><use href="#i-chip"/></svg></span>
+        <span class="pc-name"><b>Smart Server</b><small>LLC</small></span>
+        <span class="pc-badge"><svg class="ic"><use href="#i-shield"/></svg><span data-i18n="partners.dealer">Rasmiy diler</span></span>
+      </div>
+      <div class="marquee" id="partners-marquee">
+        <div class="marquee-track" id="partners-track"></div>
+      </div>
+    </div>
+  </section>
+  <div class="foot-main">
+    <p class="wrap legal"><span>© 2026 E-Pay</span> · <a href="/" data-i18n="b.backToShop">Do‘konga qaytish</a></p>
+  </div>
+</footer>
+
+<button class="demo-mini press" type="button" id="theme-mini" aria-label="Mavzu: avto" title="Mavzu"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor"/></svg></button>
+
+<script src="/js/i18n.js"></script>
+<script src="/js/theme.js"></script>
+<script src="/js/motion.js"></script>
+<script src="/js/common.js"></script>
+<script src="/js/brands.js"></script>
+<script src="/js/partners.js"></script>
+</body>
+</html>

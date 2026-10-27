@@ -44,12 +44,12 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.GET, "/api/categories", "/api/brands", "/api/products",
-                                "/api/products/*", "/api/regions").permitAll()
+                                "/api/products/*", "/api/regions", "/api/storefront/config").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/orders", "/api/orders/track").permitAll()
                         .requestMatchers(HttpMethod.POST, PAYMENT_CALLBACKS).permitAll()
                         .requestMatchers("/actuator/health", "/actuator/health/**", "/error").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/", "/index.html", SecurityResponses.LOGIN_PAGE,
-                                "/css/**", "/js/**", "/images/**", "/uploads/**", "/favicon.ico",
+                        .requestMatchers(HttpMethod.GET, "/", "/index.html", "/builder.html", "/brands.html", SecurityResponses.LOGIN_PAGE,
+                                "/css/**", "/js/**", "/fonts/**", "/images/**", "/uploads/**", "/favicon.ico",
                                 "/robots.txt").permitAll()
 
                         .requestMatchers("/api/auth/**").authenticated()

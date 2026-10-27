@@ -1,0 +1,400 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>E-Pay — kompyuter qismlari, noutbuklar va serverlar</title>
+<meta name="description" data-i18n-attr="content:meta.shop" content="E-Pay — kompyuter qismlari, noutbuklar va serverlar onlayn do‘koni. Toshkent bo‘ylab 1 kunda yetkazish.">
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body data-mouse>
+
+<svg class="sprite" width="0" height="0" aria-hidden="true" focusable="false">
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+  <symbol id="i-heart" viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></symbol>
+  <symbol id="i-bag" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></symbol>
+  <symbol id="i-compare" viewBox="0 0 24 24"><path d="m16 3 4 4-4 4"/><path d="M20 7H4"/><path d="m8 21-4-4 4-4"/><path d="M4 17h16"/></symbol>
+  <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></symbol>
+  <symbol id="i-chip" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="1.5"/><rect x="9.5" y="9.5" width="5" height="5" rx=".5"/><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+  <symbol id="i-card" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2.5"/><path d="M2 10h20M6 15h4"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/></symbol>
+  <symbol id="i-sms" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M8 10h.01M12 10h.01M16 10h.01"/></symbol>
+  <symbol id="i-wrench" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></symbol>
+
+  <symbol id="p-cpu" viewBox="0 0 64 64"><rect x="17" y="17" width="30" height="30" rx="2.5"/><rect x="24.5" y="24.5" width="15" height="15" rx="1" class="acc"/><path d="M24 17v-6M32 17v-6M40 17v-6M24 47v6M32 47v6M40 47v6M17 24h-6M17 32h-6M17 40h-6M47 24h6M47 32h6M47 40h6"/><path d="M20 44l3-3"/></symbol>
+  <symbol id="p-mb" viewBox="0 0 64 64"><rect x="9" y="7" width="46" height="50" rx="2.5"/><rect x="28" y="13" width="15" height="15" rx="1" class="acc"/><path d="M48 12v22M51.5 12v22"/><rect x="14" y="13" width="9" height="9" rx="1"/><path d="M14 39h28M14 46h28"/><circle cx="48" cy="48" r="3"/><path d="M14 52h6"/></symbol>
+  <symbol id="p-ram" viewBox="0 0 64 64"><path d="M5 22l4-5h46l4 5" class="acc"/><rect x="5" y="22" width="54" height="18" rx="1.5"/><rect x="10" y="26" width="7" height="9" rx=".5"/><rect x="20" y="26" width="7" height="9" rx=".5"/><rect x="37" y="26" width="7" height="9" rx=".5"/><rect x="47" y="26" width="7" height="9" rx=".5"/><path d="M5 45h25M34 45h25M30 40v5M34 40v5"/></symbol>
+  <symbol id="p-gpu" viewBox="0 0 64 64"><rect x="5" y="17" width="50" height="28" rx="3"/><circle cx="19" cy="31" r="9"/><circle cx="41" cy="31" r="9"/><circle cx="19" cy="31" r="2.2" class="acc"/><circle cx="41" cy="31" r="2.2" class="acc"/><path d="M19 22v4M41 22v4M28 31h4"/><path d="M59 12v38M55 17h4M55 45h4"/><path d="M13 49h24" class="acc"/></symbol>
+  <symbol id="p-ssd" viewBox="0 0 64 64"><rect x="5" y="24" width="50" height="16" rx="1.5"/><path d="M55 28a4 4 0 0 1 0 8" /><circle cx="58" cy="32" r="1.6"/><rect x="15" y="28" width="13" height="8" rx=".6" class="acc"/><rect x="31" y="28" width="13" height="8" rx=".6"/><path d="M8 27v10M10.5 27v10"/></symbol>
+  <symbol id="p-hdd" viewBox="0 0 64 64"><rect x="13" y="7" width="38" height="50" rx="3"/><circle cx="32" cy="27" r="13"/><circle cx="32" cy="27" r="2.6" class="acc"/><path d="M45 49l-9-15" class="acc"/><circle cx="45" cy="49" r="2.2"/><circle cx="17.5" cy="11.5" r="1"/><circle cx="46.5" cy="11.5" r="1"/></symbol>
+  <symbol id="p-psu" viewBox="0 0 64 64"><rect x="7" y="13" width="50" height="38" rx="2.5"/><circle cx="32" cy="32" r="13"/><circle cx="32" cy="32" r="8"/><path d="M32 19v26M19 32h26"/><rect x="11" y="42" width="5" height="5" rx=".8" class="acc"/></symbol>
+  <symbol id="p-case" viewBox="0 0 64 64"><rect x="17" y="5" width="30" height="54" rx="2.5"/><circle cx="32" cy="12" r="2.2" class="acc"/><path d="M23 19h18M23 28h18M23 33h18M23 38h18M23 43h18M23 48h18"/><path d="M20 59v1.5M44 59v1.5"/></symbol>
+  <symbol id="p-cool" viewBox="0 0 64 64"><path d="M14 9h36M14 14h36M14 19h36M14 24h36M14 29h36M14 34h36M14 39h36"/><path d="M24 9v35a5 5 0 0 0 5 5h6a5 5 0 0 0 5-5V9" class="acc"/><rect x="21" y="49" width="22" height="7" rx="1"/></symbol>
+  <symbol id="p-mon" viewBox="0 0 64 64"><rect x="5" y="9" width="54" height="34" rx="2.5"/><path d="M32 43v10M21 55h22"/><path d="M11 37h12" class="acc"/></symbol>
+  <symbol id="p-lap" viewBox="0 0 64 64"><rect x="11" y="11" width="42" height="30" rx="2.5"/><path d="M4 46h56l-3.5 6h-49z"/><path d="M27 49h10" class="acc"/></symbol>
+  <symbol id="p-acc" viewBox="0 0 64 64"><rect x="21" y="8" width="22" height="46" rx="11"/><path d="M32 8v14M21 24h22"/><rect x="30.3" y="12" width="3.4" height="7" rx="1.7" class="acc"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6l-8-3Z"/><path d="m9 12 2 2 4-4"/></symbol>
+  <symbol id="i-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68 1.65 1.65 0 0 0 10 3.17V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></symbol>
+  <symbol id="i-box" viewBox="0 0 24 24"><path d="M21 8 12 3 3 8v8l9 5 9-5V8Z"/><path d="m3 8 9 5 9-5M12 13v8"/></symbol>
+  <symbol id="i-receipt" viewBox="0 0 24 24"><path d="M5 3h14v18l-3-2-2 2-2-2-2 2-2-2-3 2V3Z"/><path d="M9 8h6M9 12h6"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></symbol>
+  <symbol id="i-dollar" viewBox="0 0 24 24"><path d="M12 2v20M17 6H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></symbol>
+  <symbol id="i-store" viewBox="0 0 24 24"><path d="M3 9 5 3h14l2 6M3 9h18v2a3 3 0 0 1-6 0 3 3 0 0 1-6 0 3 3 0 0 1-6 0V9ZM5 13v8h14v-8"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
+  <symbol id="i-tag" viewBox="0 0 24 24"><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8Z"/><circle cx="7.5" cy="7.5" r="1.5"/></symbol>
+</svg>
+
+<header class="hdr hdr-store" id="hdr">
+  <div class="wrap hdr-row">
+    <a class="logo" href="#/" aria-label="E-Pay">
+      <svg viewBox="0 0 26 26" aria-hidden="true"><rect x="1.5" y="1.5" width="23" height="23" rx="6.5" fill="none" stroke="currentColor" stroke-width="2"/><rect x="8.5" y="8.5" width="9" height="9" rx="2" fill="var(--firuza)"/></svg>
+      <span class="logo-txt">E<em>-Pay</em></span>
+    </a>
+    <nav class="hdr-nav" id="hdr-nav" data-i18n-attr="aria-label:nav.main" aria-label="Asosiy menyu">
+      <div class="cat-dd" id="cat-dd">
+        <button class="btn-cat" type="button" id="cat-btn" aria-haspopup="true" aria-expanded="false" aria-controls="cat-menu"><svg class="ic"><use href="#i-grid"/></svg><span data-i18n="nav.catalog">Katalog</span><svg class="cat-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+        <div class="cat-menu" id="cat-menu" role="menu" hidden></div>
+      </div>
+      <a class="btn-build" href="/builder.html"><svg class="ic"><use href="#i-chip"/></svg><span class="bb-txt"><b class="bb-long" data-i18n="nav.build">Kompyuter yig‘ish</b><b class="bb-short" data-i18n="nav.buildShort">Yig‘ish</b></span></a>
+      <a class="hdr-help" href="#/about" id="hdr-about" data-page="about"><svg class="ic"><use href="#i-info"/></svg><span data-i18n="nav.about">Biz haqimizda</span></a>
+    </nav>
+    <div class="actions">
+      <div class="prefs" id="lang-slot"></div>
+      <button class="hdr-icon" type="button" id="search-btn" aria-expanded="false" aria-controls="search-panel" data-i18n-attr="aria-label:search" aria-label="Qidiruv"><svg class="ic"><use href="#i-search"/></svg></button>
+      <a class="hdr-icon hdr-act act-cart" href="#" data-open="cart" data-i18n-attr="aria-label:cart" aria-label="Savat"><span class="hdr-act-ic"><svg class="ic"><use href="#i-bag"/></svg><span class="badge" data-count="cart" data-n="0">0</span></span></a>
+      <button class="hdr-icon menu-btn" type="button" id="menu-btn" aria-expanded="false" aria-controls="hdr-nav" data-i18n-attr="aria-label:menu" aria-label="Menyu"><span class="menu-ic" aria-hidden="true"><i></i><i></i></span></button>
+    </div>
+  </div>
+  <nav class="hdr-sub" data-i18n-attr="aria-label:nav.pages" aria-label="Bo‘limlar">
+    <div class="wrap hdr-sub-row">
+      <a href="#/cats" data-page="cats" data-i18n="nav.cats">Kategoriyalar</a>
+      <a href="#/brands" data-page="brands" data-i18n="nav.brands">Brendlar</a>
+      <a href="#/featured" data-page="featured" data-i18n="nav.featured">Tanlanganlar</a>
+      <a href="#/new" data-page="new" data-i18n="nav.new">Yangilari</a>
+    </div>
+  </nav>
+  <div class="search-panel" id="search-panel" hidden>
+    <div class="wrap">
+      <label class="search">
+        <svg class="ic"><use href="#i-search"/></svg>
+        <span class="sr" data-i18n="search">Qidiruv</span>
+        <input id="q" type="search" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="suggest" data-i18n-attr="placeholder:search.ph" placeholder="Mahsulot nomi yoki SKU">
+        <span class="kbd" aria-hidden="true">/</span>
+        <div class="suggest" id="suggest" role="listbox" hidden></div>
+      </label>
+    </div>
+  </div>
+</header>
+<div class="ribbon"><p class="wrap"><span data-i18n="ribbon">Toshkent bo‘ylab 1 kunda bepul, viloyatlarga 2–3 kunda yetkazamiz.</span> <a href="#help" data-help><span data-i18n="more">Batafsil</span> ›</a></p></div>
+
+<main>
+  <section class="wrap promo-sec" id="promo-sec" aria-roledescription="carousel" data-i18n-attr="aria-label:h.promo" aria-label="Diqqat markazida">
+    <h1 class="sr">E-Pay</h1>
+    <div class="promo-car" id="promo-car">
+      <div class="promos" id="promos" aria-live="off"></div>
+      <div class="dots promo-dots" id="promo-dots"></div>
+    </div>
+  </section>
+
+  <section class="wrap tiles-sec">
+    <div class="tiles">
+      <div class="tile tile-dark">
+        <h2 data-i18n="tile.pc.h">Gaming PC</h2>
+        <p data-i18n="tile.pc.p">O‘zingiz yig‘ing. Moslik kafolatlanadi.</p>
+        <div class="tile-links">
+          <a class="btn btn-acc press" href="/builder.html" data-i18n="tile.pc.cta">Yig‘ishni boshlash</a>
+          <a class="link-more" href="/builder.html"><span data-i18n="more">Batafsil</span> ›</a>
+        </div>
+        <div class="tile-art tile-photo" aria-hidden="true"><img class="tile-pc" src="/images/promo/legion-tower-7.png" alt="" width="520" height="746" loading="lazy" decoding="async"></div>
+      </div>
+      <div class="tile">
+        <h2 data-i18n="tile.lap.h">Noutbuklar</h2>
+        <p data-i18n="tile.lap.p">Ish, o‘qish va o‘yin uchun.</p>
+        <div class="tile-links">
+          <a class="btn btn-acc press" href="#/c/all" data-cat-link="noutbuk" data-i18n="buy">Xarid qilish</a>
+          <a class="link-more" href="#/c/all" data-cat-link="noutbuk"><span data-i18n="more">Batafsil</span> ›</a>
+        </div>
+        <div class="tile-art tile-photo" aria-hidden="true"><img class="tile-lap" src="/images/promo/legion-pro-5.png" alt="" width="820" height="544" loading="lazy" decoding="async"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap page-sec" aria-labelledby="cats-title" data-view="cats" hidden>
+    <div class="sec-head">
+      <h2 id="cats-title"><span data-i18n="h.cats">Kategoriyalar.</span> <span class="sub" data-i18n="h.catsSub">Kerakli qismni toping.</span></h2>
+      <a class="more" href="#/c/all"><span data-i18n="sec.all">Hammasi</span><svg class="ic"><use href="#i-arrow"/></svg></a>
+    </div>
+    <ul class="hcats" id="cats"></ul>
+  </section>
+
+  <section class="wrap page-sec" aria-labelledby="brands-title" id="brands-sec" data-view="brands" hidden>
+    <div class="sec-head">
+      <h2 id="brands-title"><span data-i18n="h.brands">Brendlar.</span> <span class="sub" data-i18n="h.brandsSub">Har birining o‘z katalogi.</span></h2>
+      <a class="more" href="/brands.html"><span data-i18n="sec.all">Hammasi</span><svg class="ic"><use href="#i-arrow"/></svg></a>
+    </div>
+    <ul class="brands" id="brands"></ul>
+  </section>
+
+  <section class="wrap page-sec" aria-labelledby="feat-title" data-view="featured" hidden>
+    <div class="sec-head">
+      <h2 id="feat-title"><span data-i18n="h.feat">Tanlanganlar.</span> <span class="sub" data-i18n="h.featSub">Omborda bor, tez yetkaziladi.</span></h2>
+      <a class="more" href="#/c/all"><span data-i18n="sec.all">Hammasi</span><svg class="ic"><use href="#i-arrow"/></svg></a>
+    </div>
+    <div class="grid" id="featured"></div>
+  </section>
+
+  <section class="wrap page-sec" aria-labelledby="new-title" data-view="new" hidden>
+    <div class="sec-head">
+      <h2 id="new-title"><span data-i18n="h.new">Eng so‘nggilari.</span> <span class="sub" data-i18n="h.newSub">Hozir ko‘rib chiqing.</span></h2>
+      <div class="rail-nav">
+        <button class="rail-btn press" type="button" data-rail="-1" data-i18n-attr="aria-label:rail.prev" aria-label="Oldingi"><svg class="ic"><use href="#i-arrow"/></svg></button>
+        <button class="rail-btn press" type="button" data-rail="1" data-i18n-attr="aria-label:rail.next" aria-label="Keyingi"><svg class="ic"><use href="#i-arrow"/></svg></button>
+      </div>
+    </div>
+    <div class="rail" id="new"></div>
+  </section>
+
+  <section class="wrap catview" id="catview" hidden>
+    <nav class="crumbs" aria-label="breadcrumb"><a href="#/" data-i18n="nav.home">Asosiy</a><span>/</span><span class="crumbs-tail" id="cv-crumb"></span></nav>
+    <div class="cv-head"><span class="cv-logo" id="cv-logo" hidden></span><h1 id="cv-title"></h1><span class="cv-count" id="cv-count"></span></div>
+    <div class="cv-about" id="cv-about" hidden></div>
+    <div class="chips" id="cv-chips"></div>
+    <ul class="cats cv-cats" id="cv-cats" hidden></ul>
+    <div class="cv-body">
+      <aside class="filters" id="cv-filters">
+        <nav class="side-cats" aria-labelledby="sc-title"><p class="f-title" id="sc-title">Kategoriyalar</p><ul id="cv-side"></ul></nav>
+        <button class="f-toggle" type="button" id="f-toggle"><svg class="ic" viewBox="0 0 24 24"><path d="M4 6h16M7 12h10M10 18h4"/></svg><span data-i18n="f.filters">Filtrlar</span></button>
+        <div class="f-panel" id="f-panel">
+          <div class="fx-top"><h2 data-i18n="f.filters">Filtrlar</h2><button class="fx-clear" type="button" id="f-reset" data-i18n="f.clear" hidden>Tozalash</button></div>
+          <div class="fx-chips" id="fx-chips" hidden></div>
+        </div>
+      </aside>
+      <div class="cv-main">
+        <div class="cv-bar">
+          <label class="cv-search"><svg class="ic"><use href="#i-search"/></svg><span class="sr" data-i18n="search">Qidiruv</span><input id="cv-q" type="search" autocomplete="off" maxlength="100" data-i18n-attr="placeholder:cv.searchPh" placeholder="Katalogdan qidirish"></label>
+        </div>
+        <div class="br-bar" id="cv-brands" hidden><p class="f-title" data-i18n="f.brand">Brend</p><div class="br-row" id="br-row"></div></div>
+        <div class="cv-grid p-list" id="cv-grid"></div>
+        <div class="cv-empty" id="cv-empty" hidden><p id="cv-empty-p" data-i18n="f.none">Bu filtrlarga mos mahsulot topilmadi.</p><button class="btn btn-ink press" type="button" id="cv-empty-reset" data-i18n="f.reset">Filtrlarni tozalash</button></div>
+        <div class="cv-more" id="cv-more" hidden><button class="btn btn-ghost press" type="button" id="cv-more-btn" data-i18n="cv.more">Yana ko‘rsatish</button></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap prodview" id="prodview" hidden aria-live="polite"></section>
+
+  <section class="wrap aboutview" id="aboutview" hidden aria-labelledby="about-title">
+    <nav class="crumbs ab-crumbs" aria-label="breadcrumb"><a href="#/" data-i18n="nav.home">Asosiy</a><span>/</span><span data-i18n="ab.h1">Biz haqimizda</span></nav>
+
+    <div class="ab-hero">
+      <div class="ab-hero-txt">
+        <h1 id="about-title" data-i18n="ab.h1">Biz haqimizda</h1>
+        <p data-i18n="ab.lede">Smart Server LLC — server, tarmoq, kiberxavfsizlik va data markaz yechimlari hamda kompyuter qismlari bilan shug‘ullanadigan kompaniya.</p>
+      </div>
+      <figure class="ab-hero-img ab-art" aria-hidden="true"></figure>
+    </div>
+
+    <nav class="ab-tabs" data-i18n-attr="aria-label:nav.pages" aria-label="Bo‘limlar">
+      <button type="button" data-ab-tab="ab-mission" data-i18n="ab.tab.mission">Vazifamiz</button>
+      <button type="button" data-ab-tab="ab-services" data-i18n="ab.tab.svc">Xizmatlar</button>
+      <button type="button" data-ab-tab="ab-projects" data-i18n="ab.tab.proj">Loyihalar</button>
+      <button type="button" data-ab-tab="ab-partners" data-i18n="ab.tab.partners">Hamkorlar</button>
+      <button type="button" data-ab-tab="ab-contact" data-i18n="ab.tab.contact">Aloqa</button>
+    </nav>
+
+    <article class="ab-feat ab-sec" id="ab-mission">
+      <figure class="ab-feat-img ab-art" aria-hidden="true"></figure>
+      <div class="ab-box ab-navy">
+        <h2 data-i18n="ab.mission.h">Bizning vazifamiz</h2>
+        <p data-i18n="ab.mission.p">O‘zbekiston korxonalari, davlat tashkilotlari va har bir xaridorga ishonchli, xavfsiz va zamonaviy texnika yetkazish: to‘g‘ri uskunani tanlashdan tortib, uni ishga tushirish va xodimlarni o‘qitishgacha.</p>
+        <a class="ab-link" href="#/c/all"><span data-i18n="ab.mission.link">Katalogni ko‘rish</span> ›</a>
+      </div>
+    </article>
+
+    <article class="ab-feat ab-flip ab-sec" id="ab-services">
+      <figure class="ab-feat-img ab-art" aria-hidden="true"></figure>
+      <div class="ab-box ab-plum">
+        <h2 data-i18n="ab.svc.h">Qanday xizmatlar ko‘rsatamiz</h2>
+        <p data-i18n="ab.svc.p">Loyihaning har bir bosqichida yoningizdamiz.</p>
+        <ul class="ab-list">
+          <li><b data-i18n="ab.svc1.h">Data markazlar</b><span data-i18n="ab.svc1.p">Data markaz infratuzilmasini loyihalash va jihozlash.</span></li>
+          <li><b data-i18n="ab.svc2.h">Serverlar va kompyuterlar</b><span data-i18n="ab.svc2.p">Vazifangizga mos server yoki kompyuter konfiguratsiyasini tanlash va yetkazib berish.</span></li>
+          <li><b data-i18n="ab.svc3.h">Kiberxavfsizlik</b><span data-i18n="ab.svc3.p">Tarmoq va ma’lumotlarni himoya qilish yechimlari.</span></li>
+          <li><b data-i18n="ab.svc4.h">Malaka oshirish kurslari</b><span data-i18n="ab.svc4.p">Mijoz xodimlari uchun amaliy o‘quv mashg‘ulotlari.</span></li>
+        </ul>
+        <a class="ab-link" href="/builder.html"><span data-i18n="nav.build">Kompyuter yig‘ish</span> ›</a>
+      </div>
+    </article>
+
+    <article class="ab-feat ab-sec" id="ab-projects">
+      <figure class="ab-feat-img ab-art" aria-hidden="true"></figure>
+      <div class="ab-box ab-teal">
+        <h2 data-i18n="ab.proj.h">Katta loyihalarimiz</h2>
+        <p data-i18n="ab.proj.p">Yirik korxonalar va davlat tashkilotlari uchun data markazlar, server infratuzilmasi va kiberxavfsizlik bo‘yicha ishlar bajarganmiz hamda xodimlari uchun malaka oshirish kurslarini o‘tkazganmiz.</p>
+        <ul class="ab-list ab-list-plain">
+          <li><b data-i18n="ab.proj1">O‘zbekneftgaz</b></li>
+          <li><b data-i18n="ab.proj2">Ichki ishlar vazirligi</b></li>
+          <li><b data-i18n="ab.proj3">Navoiy uranni qayta ishlash korxonasi</b></li>
+          <li><span data-i18n="ab.projMore">va boshqa yirik tashkilotlar</span></li>
+        </ul>
+      </div>
+    </article>
+
+    <div class="ab-center ab-sec" id="ab-partners">
+      <h2 data-i18n="ab.brands.h">Bizning rasmiy hamkor brendlarimiz</h2>
+      <p data-i18n="ab.brands.p">Jahonning yetakchi ishlab chiqaruvchilari bilan rasmiy hamkorlik qilamiz: original uskunalar, dasturiy ta’minot va ishlab chiqaruvchi kafolati.</p>
+      <ul class="ab-partners">
+        <li><span class="ab-p-logo"><img src="/images/brands/hpe.svg" alt="" loading="lazy"></span><b>Hewlett Packard Enterprise</b></li>
+        <li><span class="ab-p-logo"><img src="/images/brands/dell.svg" alt="" loading="lazy"></span><b>Dell Technologies</b></li>
+        <li><span class="ab-p-logo"><img src="/images/brands/lenovo.svg" alt="" loading="lazy"></span><b>Lenovo</b></li>
+        <li><span class="ab-p-logo"><img src="/images/brands/cisco.svg" alt="" loading="lazy"></span><b>Cisco</b></li>
+        <li><span class="ab-p-logo"><img src="/images/brands/microsoft.svg" alt="" loading="lazy"></span><b>Microsoft</b></li>
+        <li><span class="ab-p-logo"><img src="/images/brands/vmware.svg" alt="" loading="lazy"></span><b>VMware</b></li>
+        <li><span class="ab-p-logo"><img src="/images/brands/veeam.svg" alt="" loading="lazy"></span><b>Veeam</b></li>
+        <li><span class="ab-p-logo"><img src="/images/brands/paloalto.svg" alt="" loading="lazy"></span><b>Palo Alto Networks</b></li>
+      </ul>
+    </div>
+
+    <div class="ab-contact ab-sec" id="ab-contact">
+      <div class="ab-contact-head">
+        <h2 data-i18n="ab.contact.h">Biz bilan bog‘laning</h2>
+        <p data-i18n="ab.contact.p">Loyiha, uskuna yoki narx bo‘yicha savollaringizga javob beramiz.</p>
+      </div>
+      <div class="ab-cards">
+        <div class="ab-card ab-c-blue">
+          <span class="ab-card-ic" aria-hidden="true"><svg class="ic"><use href="#i-phone"/></svg></span>
+          <small data-i18n="ab.c.phone">Telefon</small>
+          <b class="ab-num-val">+998 77 000 00 00</b>
+          <a class="ab-more" href="tel:+998770000000"><span data-i18n="ab.c.call">Qo‘ng‘iroq qilish</span><span class="ab-chev" aria-hidden="true">›</span></a>
+        </div>
+        <div class="ab-card ab-c-orange">
+          <span class="ab-card-ic" aria-hidden="true"><svg class="ic"><use href="#i-pin"/></svg></span>
+          <small data-i18n="ab.c.addr">Manzil</small>
+          <b data-i18n="ab.c.addrV">Sayram ko‘chasi 25, 1-kirish, Mirzo Ulug‘bek tumani, Toshkent</b>
+        </div>
+        <div class="ab-card ab-c-ink">
+          <span class="ab-card-ic" aria-hidden="true"><svg class="ic"><use href="#i-user"/></svg></span>
+          <small data-i18n="ab.c.ceo">Rahbar</small>
+          <b>Ruzimbay Latipov</b>
+          <span class="ab-card-sub">CEO · Smart Server LLC</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap" aria-labelledby="why-title" data-view="about" hidden>
+    <div class="sec-head">
+      <h2 id="why-title"><span data-i18n="h.why">Nega E-Pay.</span> <span class="sub" data-i18n="h.whySub">Xarid qilish oson.</span></h2>
+    </div>
+    <div class="facts">
+      <div class="fact"><svg class="ic"><use href="#i-box"/></svg><h3 data-i18n="fact.shipH">Butun O‘zbekiston bo‘ylab</h3><p data-i18n="fact.shipP">Toshkent bo‘ylab 1 kunda bepul, viloyatlarga 2–3 kunda yetkazamiz.</p></div>
+      <div class="fact"><svg class="ic"><use href="#i-shield"/></svg><h3 id="fact-warr-h">5 yilgacha kafolat</h3><p id="fact-warr-p">1 yil narx ichida, uzoqrog‘i: 3 yil +10%, 5 yil +20%. Muddatni savatda tanlaysiz.</p></div>
+      <div class="fact"><svg class="ic"><use href="#i-card"/></svg><h3 data-i18n="fact.payH">Naqd, Click yoki Payme</h3><p data-i18n="fact.payP">Yetkazilganda naqd to‘lang yoki buyurtma berishda onlayn to‘lang.</p></div>
+      <div class="fact"><svg class="ic"><use href="#i-check"/></svg><h3 data-i18n="fact.dealerH">Rasmiy diler</h3><p data-i18n="fact.dealerP">Smart Server LLC — HPE, Dell, Lenovo va boshqa brendlarning rasmiy dileri.</p></div>
+    </div>
+  </section>
+
+  <section class="wrap orderview" id="orderview" hidden aria-labelledby="ov-title">
+    <div class="ov-head">
+      <h1 id="ov-title" data-i18n="track.title">Buyurtmam</h1>
+      <p data-i18n="track.lead">Buyurtma raqami va buyurtmada ko‘rsatgan telefon raqamingizni kiriting.</p>
+    </div>
+    <form class="ov-form" id="ov-form" novalidate>
+      <label class="field"><span data-i18n="track.id">Buyurtma raqami</span>
+        <input class="input" id="ov-id" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="14" data-i18n-attr="placeholder:track.idPh" placeholder="Masalan: EP-2026-000123">
+        <span class="err" id="ov-id-err" data-i18n="track.idErr" hidden>Buyurtma raqamini kiriting</span>
+      </label>
+      <label class="field"><span data-i18n="form.phone">Telefon raqam</span>
+        <span class="phone"><span>+998</span><input id="ov-ph" type="tel" inputmode="numeric" autocomplete="tel-national" placeholder="90 123 45 67" maxlength="12"></span>
+        <span class="err" id="ov-ph-err" data-i18n="form.phoneErr" hidden>Raqamni to‘liq kiriting</span>
+      </label>
+      <p class="err ov-err" id="ov-err" role="alert" hidden></p>
+      <button class="btn btn-acc btn-wide press" type="submit" id="ov-submit" data-i18n="track.submit">Holatini ko‘rish</button>
+    </form>
+    <div class="ov-result" id="ov-result" hidden></div>
+  </section>
+</main>
+
+<footer>
+  <section class="partners" id="partners" aria-labelledby="partners-title">
+    <div class="wrap partners-row">
+      <h2 class="sr" id="partners-title" data-i18n="partners.title">Biz rasmiy diler bo'lgan brendlar</h2>
+      <div class="partners-company" id="partners-company">
+        <span class="pc-mark"><svg class="ic"><use href="#i-chip"/></svg></span>
+        <span class="pc-name"><b>Smart Server</b><small>LLC</small></span>
+        <span class="pc-badge"><svg class="ic"><use href="#i-shield"/></svg><span data-i18n="partners.dealer">Rasmiy diler</span></span>
+      </div>
+      <div class="marquee" id="partners-marquee">
+        <div class="marquee-track" id="partners-track"></div>
+      </div>
+    </div>
+  </section>
+  <div class="foot-main">
+    <p class="wrap foot-about" data-i18n="foot.about">Kompyuter qismlari, noutbuklar va aksessuarlar. Faqat onlayn do‘kon.</p>
+    <div class="wrap foot-grid">
+      <div>
+        <h4 data-i18n="foot.shop">Do‘kon</h4>
+        <ul>
+          <li><a href="#/c/all" data-i18n="nav.catalog">Katalog</a></li>
+          <li><a href="#/c/all" data-cat-link="noutbuk" data-i18n="tile.lap.h">Noutbuklar</a></li>
+          <li><a href="#" data-open="cart" data-i18n="cart">Savat</a></li>
+          <li><a href="#/order" data-i18n="nav.order">Buyurtmam</a></li>
+          <li><a href="/brands.html" data-i18n="nav.brands">Brendlar</a></li>
+          <li><a href="#/about" data-i18n="nav.about">Biz haqimizda</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 data-i18n="foot.services">Xizmatlar</h4>
+        <ul>
+          <li><a href="/builder.html" data-i18n="nav.build">Kompyuter yig‘ish</a></li>
+          <li data-i18n="foot.delivery">Toshkent: 1 kun · Viloyatlar: 2–3 kun</li>
+          <li data-i18n="foot.dealer">Rasmiy diler: Smart Server LLC</li>
+        </ul>
+      </div>
+      <div id="help">
+        <h4 data-i18n="foot.contact">Aloqa</h4>
+        <ul>
+          <li><a class="contact-num" href="tel:+998770000000">+998 77 000 00 00</a></li>
+          <li data-i18n="foot.hours">Har kuni 9:00–21:00</li>
+        </ul>
+      </div>
+    </div>
+    <p class="wrap legal"><span>© 2026 E-Pay</span> · <span data-i18n="foot.pay">To‘lov: naqd, Click, Payme</span></p>
+  </div>
+</footer>
+
+<nav class="tabbar" data-i18n-attr="aria-label:nav.main" aria-label="Asosiy menyu">
+  <a class="tab" href="#/" data-tab="home" aria-current="page"><svg class="ic"><use href="#i-home"/></svg><span data-i18n="nav.home">Asosiy</span></a>
+  <a class="tab" href="#/c/all" data-tab="cat"><svg class="ic"><use href="#i-grid"/></svg><span data-i18n="nav.catalog">Katalog</span></a>
+  <a class="tab tab-build" href="/builder.html"><svg class="ic"><use href="#i-chip"/></svg><span data-i18n="nav.buildShort">Yig‘ish</span></a>
+  <a class="tab" href="#" data-open="cart"><svg class="ic"><use href="#i-bag"/></svg><span data-i18n="cart">Savat</span><span class="badge" data-count="cart" data-n="0">0</span></a>
+  <a class="tab" href="#/order" data-tab="order"><svg class="ic"><use href="#i-receipt"/></svg><span data-i18n="nav.order">Buyurtmam</span></a>
+</nav>
+
+<div class="scrim" id="scrim" hidden></div>
+<aside class="drawer" id="cartview" role="dialog" aria-modal="true" aria-labelledby="cart-title" hidden>
+  <div class="dr-head"><h2 id="cart-title" data-i18n="cart">Savat</h2><span class="cart-count" id="cart-count"></span><button class="icon-btn press" type="button" id="dr-close" data-i18n-attr="aria-label:close" aria-label="Yopish"><svg class="ic"><use href="#i-x"/></svg></button></div>
+  <div class="dr-body"><div class="cart-main" id="cart-body"></div></div>
+</aside>
+<div class="toast" id="toast" role="status" aria-live="polite"><svg class="ic"><use href="#i-check"/></svg><span id="toast-text"></span><button type="button" data-open="cart" data-i18n="cart.open">Savatni ochish</button></div>
+
+<button class="demo-mini press" type="button" id="theme-mini" aria-label="Mavzu: avto" title="Mavzu"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor"/></svg></button>
+
+<script src="/js/i18n.js"></script>
+<script src="/js/theme.js"></script>
+<script src="/js/motion.js"></script>
+<script src="/js/common.js"></script>
+<script src="/js/promos.js"></script>
+<script src="/js/app.js"></script>
+<script src="/js/partners.js"></script>
+</body>
+</html>
