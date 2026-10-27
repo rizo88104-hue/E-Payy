@@ -31,3 +31,12 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### E-Pay ###
+.env
+application-local.yml
+uploads/
+*.log
+.idea/
+_to_delete/
+.claude/

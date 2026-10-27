@@ -1,0 +1,4 @@
+-- V1: boshlang'ich (bo'sh) migratsiya.
+-- Flyway bazani versiyalashni boshlashi va ilova ddl-auto: validate bilan
+-- ishga tushishi uchun qo'yilgan. Jadvallar keyingi V{n}__*.sql fayllarida yaratiladi.
+-- Bu fayl yozib bo'lingan: uni o'zgartirmang, yangi migratsiya qo'shing.
